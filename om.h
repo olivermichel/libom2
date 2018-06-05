@@ -34,7 +34,8 @@ namespace om {
 			explicit socket(type type_ = type::stream)
 			{
 				if ((_fd = ::socket(AF_INET, (int) type_, 0)) == -1)
-					throw std::runtime_error("socket: could not open: errno: " + std::to_string(errno));
+					throw std::runtime_error("socket: could not open: errno: "
+							  + std::to_string(errno));
 			}
 
 			void bind(std::string ip_addr_, unsigned short port_ = 0)
@@ -45,7 +46,8 @@ namespace om {
 				in_addr.sin_port = htons(port_);
 
 				if (::bind(_fd, (struct sockaddr*) &in_addr, sizeof(in_addr)))
-					throw std::runtime_error("socket: could not bind: errno: " + std::to_string(errno));
+					throw std::runtime_error("socket: could not bind: errno: "
+							  + std::to_string(errno));
 			}
 
 			unsigned send_to(const std::string& ip_dst_, unsigned short tp_dst_,
@@ -56,10 +58,12 @@ namespace om {
 				dest.sin_port = htons(tp_dst_);
 				dest.sin_addr.s_addr = inet_addr(ip_dst_.c_str());
 
-				ssize_t len = ::sendto(_fd, buf_, len_, flags_, (const sockaddr*) &dest, sizeof(dest));
+				ssize_t len = ::sendto(_fd, buf_, len_, flags_, (const sockaddr*) &dest,
+					sizeof(dest));
 
 				if (len == -1)
-					throw std::runtime_error("socket: could not send: errno: " + std::to_string(errno));
+					throw std::runtime_error("socket: could not send: errno: "
+							  + std::to_string(errno));
 
 				return (unsigned) len;
 			}
@@ -74,6 +78,11 @@ namespace om {
 											 + std::to_string(errno));
 
 				return (unsigned) len;
+			}
+
+			bool is_open()
+			{
+				return _fd != -1;
 			}
 
 			void close()
@@ -136,7 +145,7 @@ namespace om {
 			struct pollfd _fds[_FDS_PREALLOC] = {};
 		};
 
-		short operator&(const poll::event& lhs_, const poll::event& rhs_)
+		inline short operator&(const poll::event& lhs_, const poll::event& rhs_)
 		{
 			return ((short) lhs_ & (short) rhs_);
 		}
