@@ -18,9 +18,11 @@
 namespace om {
 
 	namespace sys {
+		//! a unix file descriptor
 		class file_descriptor
 		{
 		public:
+			//! returns the file descriptor as an integer
 			inline int fd() const { return _fd; }
 		protected:
 			int _fd = -1;
@@ -29,7 +31,7 @@ namespace om {
 
 	namespace net {
 
-		//! represents an IPv4 address (RFC 791 - https://tools.ietf.org/html/rfc791)
+		//! an IPv4 address (RFC 791 - https://tools.ietf.org/html/rfc791)
 		class ip4_addr
 		{
 
@@ -100,6 +102,7 @@ namespace om {
 		};
 
 
+		//! an unix internet socket
 		class socket : public sys::file_descriptor
 		{
 		public:
@@ -174,6 +177,8 @@ namespace om {
 	}
 
 	namespace async {
+
+		//! a wrapper around the poll() system call
 		class poll
 		{
 		public:
