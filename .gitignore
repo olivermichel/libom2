@@ -1,2 +1,4 @@
 build/
 .idea/
+test/include/catch.h
+cmake**/
