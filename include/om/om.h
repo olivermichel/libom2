@@ -11,6 +11,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cstdio>
+#include <sstream>
+#include <iomanip>
 
 namespace om {
 
@@ -25,6 +28,78 @@ namespace om {
 	}
 
 	namespace net {
+
+		//! represents an IPv4 address (RFC 791 - https://tools.ietf.org/html/rfc791)
+		class ip4_addr
+		{
+
+		public:
+
+			//! constructs an ip4_addr and sets the address 0.0.0.0
+			ip4_addr() = default;
+
+			ip4_addr(const ip4_addr& copy_from_) = default;
+			ip4_addr& operator=(const ip4_addr& copy_from_) = default;
+
+			//! constructs an ip4_addr
+			//! \param addr_ address as 4 byte unsigned integer
+			ip4_addr(uint32_t addr_) : _addr(htonl(addr_)) { }
+
+			//! constructs an ip4_addr
+			//! \param addr_ address as char array in dotted decimal notation
+			ip4_addr(const char* addr_)
+			{
+				if ((_addr = inet_addr(addr_)) == -1)
+					throw std::invalid_argument("ip4_addr: invalid argument " + std::string(addr_));
+			}
+
+			//! constructs an ip4_addr
+			//! \param addr_ address as std::string in dotted decimal notation
+			ip4_addr(const std::string& addr_)
+			{
+				if ((_addr = inet_addr(addr_.c_str())) == -1)
+					throw std::invalid_argument("ip4_addr: invalid argument " + addr_);
+			}
+
+			//! casts an ip4_addr object to a 4 byte unsigned integer in network byte order
+			inline operator uint32_t() const
+			{
+				return _addr;
+			}
+
+			inline bool operator<(const ip4_addr& rhs_)
+			{
+				return _addr < rhs_._addr;
+			}
+
+			inline bool operator==(const ip4_addr& rhs_)
+			{
+				return _addr == rhs_._addr;
+			}
+
+			//! returns a std::string in dotted decimal notation
+			std::string str_desc() const
+			{
+				std::stringstream ss;
+				ss << (int)(_addr >> 0 & 0xff) << "." << (int)(_addr >> 8 & 0xff)
+				   << '.' << (int)(_addr >> 16 & 0xff) << '.' <<  (int)(_addr >> 24 & 0xff);
+				return ss.str();
+			}
+
+			//! writes an ip4_addr to a std::ostream in dotted decimal notation
+			friend std::ostream& operator<<(std::ostream& os_, const ip4_addr& addr)
+			{
+				return (os_ << (int)(addr._addr >> 0 & 0xff)  << "."
+							<< (int)(addr._addr >> 8 & 0xff)  << '.'
+							<< (int)(addr._addr >> 16 & 0xff) << '.'
+							<< (int)(addr._addr >> 24 & 0xff));
+			}
+
+		private:
+			uint32_t _addr = 0;
+		};
+
+
 		class socket : public sys::file_descriptor
 		{
 		public:
