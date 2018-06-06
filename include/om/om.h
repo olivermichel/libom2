@@ -3,17 +3,17 @@
 #define LIBOM2_H
 
 #include <arpa/inet.h>
+#include <cstdio>
+#include <iomanip>
 #include <iostream>
 #include <map>
 #include <netinet/in.h>
 #include <poll.h>
+#include <sstream>
 #include <stdexcept>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <cstdio>
-#include <sstream>
-#include <iomanip>
 
 namespace om {
 
@@ -31,11 +31,95 @@ namespace om {
 
 	namespace net {
 
-		//! an IPv4 address (RFC 791 - https://tools.ietf.org/html/rfc791)
+		//! a media access control address (IEEE 802)
+		class mac_addr
+		{
+		public:
+
+			static const unsigned LEN = 6;
+
+			//! constructs a mac_addr and sets the address 00:00:00:00:00:00
+			mac_addr() = default;
+
+			//! constructs a mac_addr using an 8 byte integer
+
+			//! - bytes 0 and 1 are discarded
+			mac_addr(uint64_t addr_)
+			{
+				_addr[0] = (uint8_t)(addr_ >> (5 * 8));
+				_addr[1] = (uint8_t)(addr_ >> (4 * 8));
+				_addr[2] = (uint8_t)(addr_ >> (3 * 8));
+				_addr[3] = (uint8_t)(addr_ >> (2 * 8));
+				_addr[4] = (uint8_t)(addr_ >> (1 * 8));
+				_addr[5] = (uint8_t)(addr_ >> (0 * 8));
+			}
+
+			explicit mac_addr(const unsigned char* buf_)
+			{
+				for (unsigned i = 0; i < LEN; i++) _addr[i] = buf_[i];
+			}
+
+			friend inline bool operator<(const mac_addr& lhs_, const mac_addr& rhs_)
+			{
+				return lhs_._addr[0] < rhs_._addr[0] || lhs_._addr[1] < rhs_._addr[1]
+					   || lhs_._addr[2] < rhs_._addr[2] || lhs_._addr[3] < rhs_._addr[3]
+					   || lhs_._addr[4] < rhs_._addr[4] || lhs_._addr[5] < rhs_._addr[5];
+			}
+
+			friend inline bool operator==(const mac_addr& lhs_, const mac_addr& rhs_)
+			{
+				return lhs_._addr[0] == rhs_._addr[0] && lhs_._addr[1] == rhs_._addr[1]
+					   && lhs_._addr[2] == rhs_._addr[2] && lhs_._addr[3] == rhs_._addr[3]
+					   && lhs_._addr[4] == rhs_._addr[4] && lhs_._addr[5] == rhs_._addr[5];
+			}
+
+			//! returns a std::string of the mac_addr in canonical form
+			std::string str() const
+			{
+				std::stringstream ss;
+				ss << std::hex
+				   << std::setw(2) << std::setfill('0') << (int) _addr[5] << ':'
+				   << std::setw(2) << std::setfill('0') << (int) _addr[4] << ':'
+				   << std::setw(2) << std::setfill('0') << (int) _addr[3] << ':'
+				   << std::setw(2) << std::setfill('0') << (int) _addr[2] << ':'
+				   << std::setw(2) << std::setfill('0') << (int) _addr[1] << ':'
+				   << std::setw(2) << std::setfill('0') << (int) _addr[0];
+				return ss.str();
+			}
+
+			//! writes a mac_addr to a std::ostream in canonical form
+			friend inline std::ostream& operator<<(std::ostream& os_, mac_addr& a_)
+			{
+				return os_ << (std::to_string((int) a_._addr[5])
+							   + ":" + std::to_string((int) a_._addr[4])
+							   + ":" + std::to_string((int) a_._addr[3])
+							   + ":" + std::to_string((int) a_._addr[2])
+							   + ":" + std::to_string((int) a_._addr[1])
+							   + ":" + std::to_string((int) a_._addr[0]));
+			}
+
+			//! writes the mac_addr into a byte buffer
+			void write(uint8_t* dst_)
+			{
+				dst_[0] = _addr[5];
+				dst_[1] = _addr[4];
+				dst_[2] = _addr[3];
+				dst_[3] = _addr[2];
+				dst_[4] = _addr[1];
+				dst_[5] = _addr[0];
+			}
+
+		private:
+			uint8_t _addr[6] = { 0 };
+		};
+
+
+		//! an internet protocol version 4 address (RFC 791 - https://tools.ietf.org/html/rfc791)
 		class ip4_addr
 		{
-
 		public:
+
+			static const unsigned LEN = 4;
 
 			//! constructs an ip4_addr and sets the address 0.0.0.0
 			ip4_addr() = default;
