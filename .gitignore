@@ -2,3 +2,5 @@ build/
 .idea/
 test/include/catch.h
 cmake**/
+doc/html
+doc/latex
