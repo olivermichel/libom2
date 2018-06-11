@@ -4,25 +4,79 @@
 
 using namespace om;
 
-unsigned char buf1[] = { // EthII, IP4, TCP, 66 Bytes
-	0x00, 0x26, 0x62, 0x2f, 0x47, 0x87, 0x00, 0x1d, 0x60, 0xb3, 0x01, 0x84, 0x08, 0x00, 0x45, 0x00,
-	0x00, 0x34, 0x47, 0x6c, 0x40, 0x00, 0x40, 0x06, 0xad, 0x65, 0xc0, 0xa8, 0x01, 0x02, 0xae, 0x8f,
-	0xd5, 0xb8, 0xd6, 0x39, 0x00, 0x50, 0xf6, 0x1c, 0x6f, 0x94, 0xfa, 0x58, 0xb8, 0xd1, 0x80, 0x10,
-	0x00, 0x9f, 0x75, 0x78, 0x00, 0x00, 0x01, 0x01, 0x08, 0x0a, 0x00, 0x0d, 0x2b, 0xea, 0x12, 0xcc,
-	0x8c, 0x8a
+unsigned char buf1[] = { // EthII
+	0x00, 0x26, 0x62, 0x2f, 0x47, 0x87, // destination address
+	0x00, 0x1d, 0x60, 0xb3, 0x01, 0x84, // source address
+	0x08, 0x00 // ether type
 };
+
 
 
 TEST_CASE("net::ethernet_header", "[net][ethernet_header]")
 {
 	SECTION("ethernet_header")
 	{
-		SECTION("can be initialized with a byte buffer")
+		SECTION("can be initialized with a byte buffer w")
 		{
 			net::ethernet_header eth(buf1);
-
+			CHECK(eth.len() == 14);
 		}
+	}
 
+	SECTION("dest_addr")
+	{
+		SECTION("returns the frame's destination address")
+		{
+			net::ethernet_header eth(buf1);
+			CHECK(eth.dest_addr() == net::mac_addr(0x0026622f4787));
+		}
+	}
 
+	SECTION("set_dest_addr")
+	{
+		SECTION("sets the frame's destination address")
+		{
+			net::ethernet_header eth;
+			eth.set_dest_addr(net::mac_addr(0x0026622f4787));
+			CHECK(eth.dest_addr() == net::mac_addr(0x0026622f4787));
+		}
+	}
+
+	SECTION("src_addr")
+	{
+		SECTION("returns the frame's source address")
+		{
+			net::ethernet_header eth(buf1);
+			CHECK(eth.src_addr() == net::mac_addr(0x001d60b30184));
+		}
+	}
+
+	SECTION("set_src_addr")
+	{
+		SECTION("sets the frame's source address")
+		{
+			net::ethernet_header eth;
+			eth.set_src_addr(net::mac_addr(0x0026622f4787));
+			CHECK(eth.src_addr() == net::mac_addr(0x0026622f4787));
+		}
+	}
+
+	SECTION("ether_type")
+	{
+		SECTION("returns the frame's ether type")
+		{
+			net::ethernet_header eth(buf1);
+			CHECK(eth.ether_type() == 0x0800);
+		}
+	}
+
+	SECTION("set_ether_type")
+	{
+		SECTION("sets the frame's ether type")
+		{
+			net::ethernet_header eth;
+			eth.set_ether_type(0x0800);
+			CHECK(eth.ether_type() == 0x0800);
+		}
 	}
 }

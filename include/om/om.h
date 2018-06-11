@@ -15,6 +15,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <netinet/if_ether.h>
+
 namespace om {
 
 	namespace sys {
@@ -30,6 +32,19 @@ namespace om {
 	}
 
 	namespace net {
+
+		//! reverses the byte order of a 16 bit unsigned integer
+		inline uint16_t reverse_byte_order(uint16_t a_)
+		{
+			return (a_ >> 8) | (a_ << 8);
+		}
+
+		//! reverses the byte order of a 32 bit unsigned integer
+		inline uint32_t reverse_byte_order(uint32_t a_)
+		{
+			return ((a_ & 0xff000000)>>24) | ((a_ & 0x00ff0000)>>8)
+				   | ((a_ & 0x0000ff00)<<8) | (a_<<24);
+		}
 
 		//! a media access control address (IEEE 802)
 		class mac_addr
@@ -78,35 +93,35 @@ namespace om {
 			{
 				std::stringstream ss;
 				ss << std::hex
-				   << std::setw(2) << std::setfill('0') << (int) _addr[5] << ':'
-				   << std::setw(2) << std::setfill('0') << (int) _addr[4] << ':'
-				   << std::setw(2) << std::setfill('0') << (int) _addr[3] << ':'
-				   << std::setw(2) << std::setfill('0') << (int) _addr[2] << ':'
+				   << std::setw(2) << std::setfill('0') << (int) _addr[0] << ':'
 				   << std::setw(2) << std::setfill('0') << (int) _addr[1] << ':'
-				   << std::setw(2) << std::setfill('0') << (int) _addr[0];
+				   << std::setw(2) << std::setfill('0') << (int) _addr[2] << ':'
+				   << std::setw(2) << std::setfill('0') << (int) _addr[3] << ':'
+				   << std::setw(2) << std::setfill('0') << (int) _addr[4] << ':'
+				   << std::setw(2) << std::setfill('0') << (int) _addr[5];
 				return ss.str();
 			}
 
 			//! writes a mac_addr to a std::ostream in canonical form
 			friend inline std::ostream& operator<<(std::ostream& os_, mac_addr& a_)
 			{
-				return os_ << (std::to_string((int) a_._addr[5])
-							   + ":" + std::to_string((int) a_._addr[4])
-							   + ":" + std::to_string((int) a_._addr[3])
-							   + ":" + std::to_string((int) a_._addr[2])
+				return os_ << (std::to_string((int) a_._addr[0])
 							   + ":" + std::to_string((int) a_._addr[1])
-							   + ":" + std::to_string((int) a_._addr[0]));
+							   + ":" + std::to_string((int) a_._addr[2])
+							   + ":" + std::to_string((int) a_._addr[3])
+							   + ":" + std::to_string((int) a_._addr[4])
+							   + ":" + std::to_string((int) a_._addr[5]));
 			}
 
 			//! writes the mac_addr into a byte buffer
 			void write(uint8_t* dst_)
 			{
-				dst_[0] = _addr[5];
-				dst_[1] = _addr[4];
-				dst_[2] = _addr[3];
-				dst_[3] = _addr[2];
-				dst_[4] = _addr[1];
-				dst_[5] = _addr[0];
+				dst_[0] = _addr[0];
+				dst_[1] = _addr[1];
+				dst_[2] = _addr[2];
+				dst_[3] = _addr[3];
+				dst_[4] = _addr[4];
+				dst_[5] = _addr[5];
 			}
 
 		private:
@@ -188,47 +203,91 @@ namespace om {
 		class packet_header
 		{
 		public:
-			packet_header() = default;
-			explicit packet_header(const unsigned char* buf_) : _buf(buf_) { }
+			packet_header() = delete;
+			explicit packet_header(std::size_t len_)
+				: _alloc(true), _buf(new unsigned char[len_]), _len(len_) { }
+			explicit packet_header(const unsigned char* buf_)
+				: _buf(buf_) { }
 			packet_header(const packet_header&) = delete;
 			packet_header& operator=(const packet_header&) = delete;
 			packet_header(packet_header&&) = default;
 			packet_header& operator=(packet_header&&) = default;
 
-			virtual std::size_t len() const = 0;
+			std::size_t len() const
+			{
+				return _len;
+			}
 
 			inline void write(unsigned char* buf_)
 			{
 				std::memcpy(buf_, _buf, this->len());
 			}
 
-			virtual ~packet_header() = default;
-		private:
+			virtual ~packet_header()
+			{
+				if (_alloc)
+					delete[] _buf;
+			}
+
+		protected:
+			bool _alloc               = false;
 			const unsigned char* _buf = nullptr;
+			std::size_t _len          = 0;
 		};
 
-
+		//! a standard Ethernet header
 		class ethernet_header : public packet_header
 		{
 		public:
+			//! constructs an ethernet header with all fields set to 0
+			ethernet_header()
+				: packet_header(14), _eth((ether_header*) _buf)  { }
 
-			ethernet_header() = default;
-			explicit ethernet_header(const unsigned char* buf_) : packet_header(buf_) { }
-
-			inline std::size_t len() const
+			//! constructs an ethernet header from a byte buffer
+			explicit ethernet_header(const unsigned char* buf_)
+				: packet_header(buf_), _eth((ether_header*) _buf)
 			{
-				return 14;
+				_len = 14;
 			}
-/*
-			mac_addr src_addr() const;
-			void set_src_addr(const mac_addr& src_addr_);
 
-			mac_addr dst_addr() const;
-			void set_dst_addr(const mac_addr& dst_addr);
+			//! returns the frame's destination address
+			mac_addr dest_addr() const
+			{
+				return mac_addr(_eth->ether_dhost);
+			}
 
-			uint16_t ether_type() const;
-			void set_ether_type(const uint16_t& ether_type_);
-*/
+			//! sets the frame's destination address
+			void set_dest_addr(mac_addr dest_addr_)
+			{
+				dest_addr_.write(_eth->ether_dhost);
+			}
+
+			//! returns the frame's source address
+			mac_addr src_addr() const
+			{
+				return mac_addr(_eth->ether_shost);
+			}
+
+			//! sets the frame's source address
+			void set_src_addr(mac_addr src_addr_)
+			{
+				src_addr_.write(_eth->ether_shost);
+			}
+
+			//! returns the frame's ether type
+			uint16_t ether_type() const
+			{
+				return reverse_byte_order(_eth->ether_type);
+			}
+
+			//! sets the frame's ether type
+			void set_ether_type(uint16_t ether_type_)
+			{
+				_eth->ether_type = reverse_byte_order(ether_type_);
+			}
+
+		private:
+			ether_header* _eth = nullptr;
 		};
 
 
