@@ -19,7 +19,9 @@ add_executable(test_runner test/test_runner.cc include/om/om.h
         test/net/ip4_addr_test.cc
         test/net/ip4_header_test.cc
         test/net/mac_addr_test.cc
-        test/net/socket_test.cc)
+        test/net/socket_test.cc
+        test/net/tcp_header_test.cc
+        test/net/udp_header_test.cc)
 
 target_include_directories(test_runner PUBLIC test/include)
 target_include_directories(test_runner PUBLIC include)

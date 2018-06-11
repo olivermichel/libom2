@@ -1,7 +1,3 @@
-//
-// jetstream network analytics
-// Oliver Michel 2018
-//
 
 #include <catch.h>
 #include <om/om.h>

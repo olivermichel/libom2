@@ -17,6 +17,8 @@
 
 #include <netinet/if_ether.h>
 #include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
 
 namespace om {
 
@@ -375,6 +377,44 @@ namespace om {
 
 		private:
 			ip* _ip = nullptr;
+		};
+
+		//! a tcp packet header
+		class tcp_header : public packet_header
+		{
+		public:
+			//! constructs a tcp header with all fields set to 0
+			tcp_header()
+				: packet_header(20), _tcp((tcphdr*) _buf)  { }
+
+			//! constructs a tcp header from a byte buffer
+			explicit tcp_header(const unsigned char* buf_)
+				: packet_header(buf_), _tcp((tcphdr*) _buf)
+			{
+				_len = 20;
+			}
+
+		private:
+			tcphdr* _tcp = nullptr;
+		};
+
+		//! a udp datagram header
+		class udp_header : public packet_header
+		{
+		public:
+			//! constructs a tcp header with all fields set to 0
+			udp_header()
+				: packet_header(20), _udp((udphdr*) _buf)  { }
+
+			//! constructs a tcp header from a byte buffer
+			explicit udp_header(const unsigned char* buf_)
+				: packet_header(buf_), _udp((udphdr*) _buf)
+			{
+				_len = 8;
+			}
+
+		private:
+			udphdr* _udp = nullptr;
 		};
 
 		//! an unix internet socket
