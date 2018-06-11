@@ -4,22 +4,33 @@
 
 using namespace om;
 
-unsigned char buf1[] = { // EthII
-	0x00, 0x26, 0x62, 0x2f, 0x47, 0x87, // destination address
-	0x00, 0x1d, 0x60, 0xb3, 0x01, 0x84, // source address
-	0x08, 0x00 // ether type
-};
+
 
 
 
 TEST_CASE("net::ethernet_header", "[net][ethernet_header]")
 {
+	unsigned char buf1[] = { // EthII
+		0x00, 0x26, 0x62, 0x2f, 0x47, 0x87, // destination address
+		0x00, 0x1d, 0x60, 0xb3, 0x01, 0x84, // source address
+		0x08, 0x00 // ether type
+	};
+
 	SECTION("ethernet_header")
 	{
-		SECTION("can be initialized with a byte buffer w")
+		SECTION("can be constructed with a byte buffer")
 		{
 			net::ethernet_header eth(buf1);
 			CHECK(eth.len() == 14);
+		}
+
+		SECTION("can be constructed without a byte buffer")
+		{
+			net::ethernet_header eth;
+			CHECK(eth.len() == 14);
+			CHECK(eth.dest_addr() == net::mac_addr{});
+			CHECK(eth.src_addr()  == net::mac_addr{});
+			CHECK(eth.ether_type() == 0);
 		}
 	}
 

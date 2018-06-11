@@ -291,6 +291,11 @@ namespace om {
 		};
 
 
+		class ip4_header
+		{
+
+		};
+
 		//! an unix internet socket
 		class socket : public sys::file_descriptor
 		{
