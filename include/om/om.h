@@ -185,20 +185,41 @@ namespace om {
 			uint32_t _addr = 0;
 		};
 
-		class ethernet_header
+		class packet_header
 		{
 		public:
+			packet_header() = default;
+			explicit packet_header(const unsigned char* buf_) : _buf(buf_) { }
+			packet_header(const packet_header&) = delete;
+			packet_header& operator=(const packet_header&) = delete;
+			packet_header(packet_header&&) = default;
+			packet_header& operator=(packet_header&&) = default;
+
+			virtual std::size_t len() const = 0;
+
+			inline void write(unsigned char* buf_)
+			{
+				std::memcpy(buf_, _buf, this->len());
+			}
+
+			virtual ~packet_header() = default;
+		private:
+			const unsigned char* _buf = nullptr;
+		};
+
+
+		class ethernet_header : public packet_header
+		{
+		public:
+
 			ethernet_header() = default;
-			ethernet_header(const unsigned char* buf_);
+			explicit ethernet_header(const unsigned char* buf_) : packet_header(buf_) { }
 
-			ethernet_header(const ethernet_header&) = delete;
-			ethernet_header& operator=(const ethernet_header&) = delete;
-
-			ethernet_header(ethernet_header&&) = default;
-			ethernet_header& operator=(ethernet_header&&) = default;
+			inline std::size_t len() const
+			{
+				return 14;
+			}
 /*
-			void write(unsigned char* buf_);
-
 			mac_addr src_addr() const;
 			void set_src_addr(const mac_addr& src_addr_);
 
@@ -208,8 +229,6 @@ namespace om {
 			uint16_t ether_type() const;
 			void set_ether_type(const uint16_t& ether_type_);
 */
-		private:
-			unsigned char* _buf = nullptr;
 		};
 
 

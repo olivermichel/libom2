@@ -15,6 +15,7 @@ enable_testing()
 
 add_executable(test_runner test/test_runner.cc include/om/om.h
         test/async/poll_test.cc
+        test/net/ethernet_header_test.cc
         test/net/ip4_addr_test.cc
         test/net/mac_addr_test.cc
         test/net/socket_test.cc)
