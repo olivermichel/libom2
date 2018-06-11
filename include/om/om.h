@@ -57,7 +57,11 @@ namespace om {
 			//! constructs a mac_addr and sets the address 00:00:00:00:00:00
 			mac_addr() = default;
 
-			//! constructs a mac_addr using an 8 byte integer
+			mac_addr(const mac_addr&) = default;
+			mac_addr& operator=(const mac_addr&) = default;
+
+			mac_addr(mac_addr&&) = default;
+			mac_addr& operator=(mac_addr&&) = default;
 
 			//! - bytes 0 and 1 are discarded
 			mac_addr(uint64_t addr_)

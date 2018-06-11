@@ -4,16 +4,12 @@
 
 using namespace om;
 
-
-
-
-
 TEST_CASE("net::ethernet_header", "[net][ethernet_header]")
 {
 	unsigned char buf1[] = { // EthII
 		0x00, 0x26, 0x62, 0x2f, 0x47, 0x87, // destination address
 		0x00, 0x1d, 0x60, 0xb3, 0x01, 0x84, // source address
-		0x08, 0x00 // ether type
+		0x08, 0x00                          // ether type
 	};
 
 	SECTION("ethernet_header")
