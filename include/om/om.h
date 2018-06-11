@@ -185,6 +185,33 @@ namespace om {
 			uint32_t _addr = 0;
 		};
 
+		class ethernet_header
+		{
+		public:
+			ethernet_header() = default;
+			ethernet_header(const unsigned char* buf_);
+
+			ethernet_header(const ethernet_header&) = delete;
+			ethernet_header& operator=(const ethernet_header&) = delete;
+
+			ethernet_header(ethernet_header&&) = default;
+			ethernet_header& operator=(ethernet_header&&) = default;
+/*
+			void write(unsigned char* buf_);
+
+			mac_addr src_addr() const;
+			void set_src_addr(const mac_addr& src_addr_);
+
+			mac_addr dst_addr() const;
+			void set_dst_addr(const mac_addr& dst_addr);
+
+			uint16_t ether_type() const;
+			void set_ether_type(const uint16_t& ether_type_);
+*/
+		private:
+			unsigned char* _buf = nullptr;
+		};
+
 
 		//! an unix internet socket
 		class socket : public sys::file_descriptor

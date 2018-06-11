@@ -23,8 +23,10 @@ TEST_CASE("net::ip4_addr", "[net][ip4_addr]")
 
 		SECTION("can be constructed with an integer")
 		{
-			net::ip4_addr a1 = 0x05050809;
-			CHECK((uint32_t) a1 == htonl(0x05050809));
+			net::ip4_addr a1;
+			net::ip4_addr a2 = 0x05050809;
+			CHECK((uint32_t) a1 == 0);
+			CHECK((uint32_t) a2 == htonl(0x05050809));
 		}
 	}
 
