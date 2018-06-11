@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include <netinet/if_ether.h>
+#include <netinet/ip.h>
 
 namespace om {
 
@@ -200,12 +201,13 @@ namespace om {
 			uint32_t _addr = 0;
 		};
 
+		//! base class for network packet headers
 		class packet_header
 		{
 		public:
 			packet_header() = delete;
 			explicit packet_header(std::size_t len_)
-				: _alloc(true), _buf(new unsigned char[len_]), _len(len_) { }
+				: _alloc(true), _buf(new unsigned char[len_]{0}), _len(len_) { }
 			explicit packet_header(const unsigned char* buf_)
 				: _buf(buf_) { }
 			packet_header(const packet_header&) = delete;
@@ -213,11 +215,13 @@ namespace om {
 			packet_header(packet_header&&) = default;
 			packet_header& operator=(packet_header&&) = default;
 
+			//! returns the length of the packet after initial parsing, including optional fields
 			std::size_t len() const
 			{
 				return _len;
 			}
 
+			//! writes the packet to a byte buffer
 			inline void write(unsigned char* buf_)
 			{
 				std::memcpy(buf_, _buf, this->len());
@@ -290,10 +294,83 @@ namespace om {
 			ether_header* _eth = nullptr;
 		};
 
-
-		class ip4_header
+		//! an ip version 4 header
+		class ip4_header : public packet_header
 		{
+		public:
+			//! constructs an ip v4 header with all fields set to 0
+			ip4_header()
+				: packet_header(20), _ip((ip*) _buf)  { }
 
+			//! constructs an ip v4 header from a byte buffer
+			explicit ip4_header(const unsigned char* buf_)
+				: packet_header(buf_), _ip((ip*) _buf)
+			{
+				_len = _ip->ip_hl * 4;
+			}
+
+			uint16_t total_len() const
+			{
+				return reverse_byte_order(_ip->ip_len);
+			}
+
+			void set_total_len(uint16_t total_len_)
+			{
+				_ip->ip_len = reverse_byte_order(total_len_);
+			}
+
+			uint16_t id() const
+			{
+				return reverse_byte_order(_ip->ip_id);
+			}
+
+			void set_id(uint16_t id_)
+			{
+				_ip->ip_id = reverse_byte_order(id_);
+			}
+
+			uint8_t ttl() const
+			{
+				return _ip->ip_ttl;
+			}
+
+			void set_ttl(uint8_t ttl_)
+			{
+				_ip->ip_ttl = ttl_;
+			}
+
+			uint8_t proto() const
+			{
+				return _ip->ip_p;
+			}
+
+			void set_proto(uint8_t proto_)
+			{
+				_ip->ip_p = proto_;
+			}
+
+			ip4_addr src_addr() const
+			{
+				return ip4_addr(reverse_byte_order(_ip->ip_src.s_addr));
+			}
+
+			void set_src_addr(const ip4_addr& src_addr_)
+			{
+				_ip->ip_src.s_addr = src_addr_;
+			}
+
+			ip4_addr dest_addr() const
+			{
+				return ip4_addr(reverse_byte_order(_ip->ip_dst.s_addr));
+			}
+
+			void set_dest_addr(const ip4_addr& dest_addr_)
+			{
+				_ip->ip_dst.s_addr = dest_addr_;
+			}
+
+		private:
+			ip* _ip = nullptr;
 		};
 
 		//! an unix internet socket

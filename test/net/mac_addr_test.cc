@@ -16,12 +16,12 @@ TEST_CASE("net::mac_addr", "[net][mac_addr]")
 
 			a1.write(buf2);
 
-			CHECK(buf1[0] == buf2[5]);
-			CHECK(buf1[1] == buf2[4]);
-			CHECK(buf1[2] == buf2[3]);
-			CHECK(buf1[3] == buf2[2]);
-			CHECK(buf1[4] == buf2[1]);
-			CHECK(buf1[5] == buf2[0]);
+			CHECK(buf1[0] == buf2[0]);
+			CHECK(buf1[1] == buf2[1]);
+			CHECK(buf1[2] == buf2[2]);
+			CHECK(buf1[3] == buf2[3]);
+			CHECK(buf1[4] == buf2[4]);
+			CHECK(buf1[5] == buf2[5]);
 		}
 
 		SECTION("can be constructed from a byte buffer")
@@ -32,12 +32,12 @@ TEST_CASE("net::mac_addr", "[net][mac_addr]")
 
 			a1.write(buf2);
 
-			CHECK(buf1[0] == buf2[5]);
-			CHECK(buf1[1] == buf2[4]);
-			CHECK(buf1[2] == buf2[3]);
-			CHECK(buf1[3] == buf2[2]);
-			CHECK(buf1[4] == buf2[1]);
-			CHECK(buf1[5] == buf2[0]);
+			CHECK(buf1[0] == buf2[0]);
+			CHECK(buf1[1] == buf2[1]);
+			CHECK(buf1[2] == buf2[2]);
+			CHECK(buf1[3] == buf2[3]);
+			CHECK(buf1[4] == buf2[4]);
+			CHECK(buf1[5] == buf2[5]);
 		}
 	}
 
