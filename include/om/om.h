@@ -404,7 +404,7 @@ namespace om {
 		public:
 			//! constructs a tcp header with all fields set to 0
 			udp_header()
-				: packet_header(20), _udp((udphdr*) _buf)  { }
+				: packet_header(8), _udp((udphdr*) _buf)  { }
 
 			//! constructs a tcp header from a byte buffer
 			explicit udp_header(const unsigned char* buf_)
