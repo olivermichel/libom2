@@ -164,6 +164,11 @@ namespace om {
 			}
 
 			//! constructs an ip4_addr
+			//! \param addr_ pointer to a byte buffer
+			ip4_addr(const unsigned char* buf_)
+				: _addr(buf_[0] << 24 | buf_[1] << 16 | buf_[2] << 8 | buf_[3]) { }
+
+			//! constructs an ip4_addr
 			//! \param addr_ address as std::string in dotted decimal notation
 			ip4_addr(const std::string& addr_)
 			{

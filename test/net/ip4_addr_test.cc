@@ -28,6 +28,13 @@ TEST_CASE("net::ip4_addr", "[net][ip4_addr]")
 			CHECK((uint32_t) a1 == 0);
 			CHECK((uint32_t) a2 == htonl(0x05050809));
 		}
+
+		SECTION("can be constructed from a byte array")
+		{
+			unsigned char buf[] = { 0x02, 0x05, 0x05, 0x04};
+			net::ip4_addr a1(buf);
+			CHECK((uint32_t) a1 == 0x02050504);
+		}
 	}
 
 	SECTION("operator uint32_t()")
