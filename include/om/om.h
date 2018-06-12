@@ -7,7 +7,6 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <net/if_arp.h>
 #include <netinet/if_ether.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -324,29 +323,29 @@ namespace om {
 		public:
 			//! constructs an ethernet header with all fields set to 0
 			arp_header()
-				: packet_header(8 + 20), _arp_hdr((arphdr*) _buf), _ether_arp((ether_arp*) _buf + 8)
+				: packet_header(8 + 20), _ether_arp((ether_arp*) _buf)
 			{ }
 
 			//! constructs an ethernet header from a byte buffer
 			explicit arp_header(const unsigned char* buf_)
-				: packet_header(buf_), _arp_hdr((arphdr*) _buf), _ether_arp((ether_arp*) _buf + 8)
+				: packet_header(buf_), _ether_arp((ether_arp*) _buf)
 			{
 				_len = 28;
 			}
 
 			uint16_t hardware_type() const
 			{
-				return reverse_byte_order(_arp_hdr->ar_hrd);
+				return reverse_byte_order(_ether_arp->ea_hdr.ar_hrd);
 			}
 
 			uint16_t protocol_type() const
 			{
-				return reverse_byte_order(_arp_hdr->ar_pro);
+				return reverse_byte_order(_ether_arp->ea_hdr.ar_pro);
 			}
 
 			uint16_t operation() const
 			{
-				return reverse_byte_order(_arp_hdr->ar_op);
+				return reverse_byte_order(_ether_arp->ea_hdr.ar_op);
 			}
 
 			mac_addr sender_hardware_addr() const
@@ -371,7 +370,6 @@ namespace om {
 			}
 
 		private:
-			arphdr* _arp_hdr = nullptr;
 			ether_arp* _ether_arp = nullptr;
 		};
 

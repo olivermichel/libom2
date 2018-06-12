@@ -61,7 +61,7 @@ TEST_CASE("net::arp_header", "[net][arp_header]")
 	SECTION("sender_protocol_addr")
 	{
 		net::arp_header arp(buf1);
-		CHECK(arp.sender_protocol_addr() == net::ip4_addr(0xac101507));
+		CHECK(arp.sender_protocol_addr() == net::ip4_addr(net::reverse_byte_order(0xac101507)));
 	}
 
 	SECTION("target_hardware_addr")
@@ -73,6 +73,6 @@ TEST_CASE("net::arp_header", "[net][arp_header]")
 	SECTION("target_protocol_addr")
 	{
 		net::arp_header arp(buf1);
-		CHECK(arp.target_protocol_addr() == net::ip4_addr(0xac101505));
+		CHECK(arp.target_protocol_addr() == net::ip4_addr(net::reverse_byte_order(0xac101505)));
 	}
 }
