@@ -515,6 +515,36 @@ namespace om {
 				_len = 8;
 			}
 
+			uint16_t src_port() const
+			{
+				return reverse_byte_order(_udp->uh_sport);
+			}
+
+			void set_src_port(uint16_t src_port_)
+			{
+				_udp->uh_sport = reverse_byte_order(src_port_);
+			}
+
+			uint16_t dest_port() const
+			{
+				return reverse_byte_order(_udp->uh_dport);
+			}
+
+			void set_dest_port(uint16_t dest_port_)
+			{
+				_udp->uh_dport = reverse_byte_order(dest_port_);
+			}
+
+			uint16_t payload_length() const
+			{
+				return reverse_byte_order(_udp->uh_ulen);
+			}
+
+			void set_payload_length(uint16_t payload_length_)
+			{
+				_udp->uh_ulen = reverse_byte_order(payload_length_);
+			}
+
 		private:
 			udphdr* _udp = nullptr;
 		};

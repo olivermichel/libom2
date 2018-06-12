@@ -33,3 +33,6 @@
 * TCP (set and get)
 
 * UDP (set and get)
+    * source port (src_port - uint16_t)
+    * destination port (dest_port - uint16_t)
+    * payload length (payload_length - uint16_t)
