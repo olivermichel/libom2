@@ -36,21 +36,53 @@ TEST_CASE("net", "[net]")
 
 	SECTION("parse an arp packet")
 	{
+		net::ethernet_header eth(buf1);
+		CHECK(eth.ether_type() == 0x0806);
+		CHECK(eth.len() == 14);
 
+		net::arp_header arp(buf1 + eth.len());
+		CHECK(arp.len() == 28);
 	}
 
 	SECTION("parse a tcp packet")
 	{
+		net::ethernet_header eth(buf2);
+		CHECK(eth.ether_type() == 0x0800);
+		CHECK(eth.len() == 14);
 
+		net::ip4_header ip(buf2 + eth.len());
+		CHECK(ip.proto() == 6);
+		CHECK(ip.len() == 20);
+
+		net::tcp_header tcp(buf2 + eth.len() + ip.len());
+		CHECK(tcp.len() == 20);
 	}
 
 	SECTION("parse an udp packet")
 	{
+		net::ethernet_header eth(buf3);
+		CHECK(eth.ether_type() == 0x0800);
+		CHECK(eth.len() == 14);
 
+		net::ip4_header ip(buf3 + eth.len());
+		CHECK(ip.proto() == 17);
+		CHECK(ip.len() == 20);
+
+		net::udp_header udp(buf3 + eth.len() + ip.len());
+		CHECK(udp.len() == 8);
 	}
 
 	SECTION("parse an icmp packet")
 	{
+		net::ethernet_header eth(buf4);
+		CHECK(eth.ether_type() == 0x0800);
+		CHECK(eth.len() == 14);
 
+		net::ip4_header ip(buf4 + eth.len());
+		CHECK(ip.proto() == 1);
+		CHECK(ip.len() == 20);
+
+		net::icmp_header icmp(buf4 + eth.len() + ip.len());
+		CHECK(icmp.len() == 8);
 	}
 }

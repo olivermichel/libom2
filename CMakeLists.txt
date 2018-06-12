@@ -17,6 +17,7 @@ add_executable(test_runner test/test_runner.cc include/om/om.h
         test/async/poll_test.cc
         test/net/arp_header_test.cc
         test/net/ethernet_header_test.cc
+        test/net/icmp_header_test.cc
         test/net/ip4_addr_test.cc
         test/net/ip4_header_test.cc
         test/net/mac_addr_test.cc
@@ -33,6 +34,8 @@ add_test(NAME arp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner arp_header)
 add_test(NAME ethernet_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner ethernet_header)
+add_test(NAME icmp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner icmp_header)
 add_test(NAME ip4_addr WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner ip4_addr)
 add_test(NAME ip4_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}

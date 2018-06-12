@@ -20,6 +20,7 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
+#include <netinet/ip_icmp.h>
 
 namespace om {
 
@@ -250,6 +251,7 @@ namespace om {
 		class ethernet_header : public packet_header
 		{
 		public:
+
 			//! constructs an ethernet header with all fields set to 0
 			ethernet_header()
 				: packet_header(14), _eth((ether_header*) _buf)  { }
@@ -398,6 +400,25 @@ namespace om {
 
 		private:
 			ip* _ip = nullptr;
+		};
+
+		//! an icmp packet header
+		class icmp_header : public packet_header
+		{
+		public:
+			//! constructs an icmp header with all fields set to 0
+			icmp_header()
+				: packet_header(8), _icmp((icmp*) _buf)  { }
+
+			//! constructs an icmp header from a byte buffer
+			explicit icmp_header(const unsigned char* buf_)
+				: packet_header(buf_), _icmp((icmp*) _buf)
+			{
+				_len = 8;
+			}
+
+		private:
+			icmp* _icmp = nullptr;
 		};
 
 		//! a tcp packet header
