@@ -7,20 +7,19 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <net/if_arp.h>
+#include <netinet/if_ether.h>
 #include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
 #include <poll.h>
 #include <sstream>
 #include <stdexcept>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#include <net/if_arp.h>
-#include <netinet/if_ether.h>
-#include <netinet/ip.h>
-#include <netinet/tcp.h>
-#include <netinet/udp.h>
-#include <netinet/ip_icmp.h>
 
 namespace om {
 
@@ -98,7 +97,7 @@ namespace om {
 			}
 
 			//! returns a std::string of the mac_addr in canonical form
-			std::string str() const
+			std::string to_string() const
 			{
 				std::stringstream ss;
 				ss << std::hex
@@ -112,14 +111,9 @@ namespace om {
 			}
 
 			//! writes a mac_addr to a std::ostream in canonical form
-			friend inline std::ostream& operator<<(std::ostream& os_, mac_addr& a_)
+			friend std::ostream& operator<<(std::ostream& os_, mac_addr& a_)
 			{
-				return os_ << (std::to_string((int) a_._addr[0])
-							   + ":" + std::to_string((int) a_._addr[1])
-							   + ":" + std::to_string((int) a_._addr[2])
-							   + ":" + std::to_string((int) a_._addr[3])
-							   + ":" + std::to_string((int) a_._addr[4])
-							   + ":" + std::to_string((int) a_._addr[5]));
+				return (os_ << a_.to_string());
 			}
 
 			//! writes the mac_addr into a byte buffer
@@ -193,7 +187,7 @@ namespace om {
 			}
 
 			//! returns a std::string in dotted decimal notation
-			std::string str_desc() const
+			std::string to_string() const
 			{
 				std::stringstream ss;
 				ss << (int)(_addr >> 0 & 0xff) << "." << (int)(_addr >> 8 & 0xff)
@@ -202,12 +196,9 @@ namespace om {
 			}
 
 			//! writes an ip4_addr to a std::ostream in dotted decimal notation
-			friend std::ostream& operator<<(std::ostream& os_, const ip4_addr& addr)
+			friend std::ostream& operator<<(std::ostream& os_, const ip4_addr& addr_)
 			{
-				return (os_ << (int)(addr._addr >> 0 & 0xff)  << "."
-							<< (int)(addr._addr >> 8 & 0xff)  << '.'
-							<< (int)(addr._addr >> 16 & 0xff) << '.'
-							<< (int)(addr._addr >> 24 & 0xff));
+				return (os_ << addr_.to_string());
 			}
 
 		private:

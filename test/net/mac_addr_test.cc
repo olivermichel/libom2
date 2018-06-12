@@ -41,12 +41,17 @@ TEST_CASE("net::mac_addr", "[net][mac_addr]")
 		}
 	}
 
-	SECTION("str()")
+	SECTION("to_string")
 	{
-		SECTION("returns a string in canonical form")
-		{
-			net::mac_addr a1 = 0x010101010101;
-			CHECK(a1.str() == "01:01:01:01:01:01");
-		}
+		net::mac_addr a1 = 0x010101010101;
+		CHECK(a1.to_string() == "01:01:01:01:01:01");
+	}
+
+	SECTION("operator<<")
+	{
+		net::mac_addr a1 = 0x010101010101;
+		std::stringstream ss;
+		ss << a1;
+		CHECK(ss.str() == "01:01:01:01:01:01");
 	}
 }
