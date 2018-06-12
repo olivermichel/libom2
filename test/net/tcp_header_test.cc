@@ -18,19 +18,55 @@ TEST_CASE("net::tcp_header", "[net][tcp_header]")
 		0x00, 0x00              // urgent pointer
 	};
 
+	net::tcp_header tcp1(buf1);
+	net::tcp_header tcp2;
+
 	SECTION("tcp_header")
 	{
 		SECTION("can be constructed with a byte buffer")
 		{
-			net::tcp_header tcp(buf1);
-			CHECK(tcp.len() == 20);
+			CHECK(tcp1.len() == 20);
 		}
 
 		SECTION("can be constructed without a byte buffer")
 		{
-			net::tcp_header tcp;
-			CHECK(tcp.len() == 20);
-			//TODO: check all fields empty
+			CHECK(tcp2.len() == 20);
+			CHECK(tcp2.src_port() == 0);
+			CHECK(tcp2.dest_port() == 0);
+			CHECK(tcp2.seq_no() == 0);
+			CHECK(tcp2.ack_no() == 0);
+			CHECK(tcp2.flags() == 0);
+			CHECK(tcp2.window_size() == 0);
 		}
+	}
+
+	SECTION("src_port")
+	{
+		CHECK(tcp1.src_port() == 59966);
+	}
+
+	SECTION("dest_port")
+	{
+		CHECK(tcp1.dest_port() == 443);
+	}
+
+	SECTION("seq_no")
+	{
+		CHECK(tcp1.seq_no() == 1739385856);
+	}
+
+	SECTION("ack_no")
+	{
+		CHECK(tcp1.ack_no() == 2029983222);
+	}
+
+	SECTION("flags")
+	{
+		CHECK(tcp1.flags() == 16);
+	}
+
+	SECTION("window_size")
+	{
+		CHECK(tcp1.window_size() == 4117);
 	}
 }

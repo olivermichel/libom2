@@ -30,7 +30,13 @@
     * type (type - uint8_t)
     * code (code - uint8_t)
 
-* TCP (set and get)
+* TCP (get only)
+    * source port (src_port - uint16_t)
+    * destination port (dest_port - uint16_t)
+    * sequence number (seq_no - uint32_t)
+    * acknowledgement number (ack_no - uint32_t)
+    * flags (flags - uint8_t)
+    * window size (window_size - uint16_t)
 
 * UDP (set and get)
     * source port (src_port - uint16_t)

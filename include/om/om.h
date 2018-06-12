@@ -496,6 +496,36 @@ namespace om {
 				_len = 20;
 			}
 
+			uint16_t src_port() const
+			{
+				return reverse_byte_order(_tcp->th_sport);
+			}
+
+			uint16_t dest_port() const
+			{
+				return reverse_byte_order(_tcp->th_dport);
+			}
+
+			uint32_t seq_no() const
+			{
+				return (reverse_byte_order(_tcp->th_seq));
+			}
+
+			uint32_t ack_no() const
+			{
+				return (reverse_byte_order(_tcp->th_ack));
+			}
+
+			uint8_t flags() const
+			{
+				return _tcp->th_flags;
+			}
+
+			uint16_t window_size() const
+			{
+				return reverse_byte_order(_tcp->th_win);
+			}
+
 		private:
 			tcphdr* _tcp = nullptr;
 		};
