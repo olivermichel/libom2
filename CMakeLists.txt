@@ -20,6 +20,8 @@ add_executable(test_runner test/test_runner.cc include/om/om.h
         test/net/ip4_addr_test.cc
         test/net/ip4_header_test.cc
         test/net/mac_addr_test.cc
+        test/net/net_test.cc
+        test/net/packet_header_test.cc
         test/net/socket_test.cc
         test/net/tcp_header_test.cc
         test/net/udp_header_test.cc)
@@ -37,6 +39,10 @@ add_test(NAME ip4_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner ip4_header)
 add_test(NAME mac_addr WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner mac_addr)
+add_test(NAME net WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner net)
+add_test(NAME packet_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner packet_header)
 add_test(NAME socket WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner socket)
 add_test(NAME tcp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
