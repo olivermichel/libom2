@@ -41,10 +41,22 @@ TEST_CASE("net::mac_addr", "[net][mac_addr]")
 		}
 	}
 
+	SECTION("operator uint64_t()")
+	{
+		net::mac_addr a1 = 0x010203040506;
+		CHECK((uint64_t) a1 == 0x010203040506);
+	}
+
 	SECTION("to_string")
 	{
 		net::mac_addr a1 = 0x010101010101;
 		CHECK(a1.to_string() == "01:01:01:01:01:01");
+	}
+
+	SECTION("to_uint64")
+	{
+		net::mac_addr a1 = 0x010203040506;
+		CHECK(a1.to_uint64() == 0x010203040506);
 	}
 
 	SECTION("operator<<")

@@ -51,6 +51,12 @@ TEST_CASE("net::ip4_addr", "[net][ip4_addr]")
 		CHECK(a2.to_string() == "12.54.23.122");
 	}
 
+	SECTION("to_uint32")
+	{
+		net::ip4_addr a1 = "5.5.8.9";
+		CHECK(a1.to_uint32() == htonl(0x05050809));
+	}
+
 	SECTION("operator<<")
 	{
 		net::ip4_addr a1 = "5.5.8.9";

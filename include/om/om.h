@@ -82,6 +82,12 @@ namespace om {
 				for (unsigned i = 0; i < LEN; i++) _addr[i] = buf_[i];
 			}
 
+			//! casts to an 8 byte unsigned integer of the address (bytes 0,1 set to 0)
+			explicit operator uint64_t() const
+			{
+				return to_uint64();
+			}
+
 			friend inline bool operator<(const mac_addr& lhs_, const mac_addr& rhs_)
 			{
 				return lhs_._addr[0] < rhs_._addr[0] || lhs_._addr[1] < rhs_._addr[1]
@@ -108,6 +114,14 @@ namespace om {
 				   << std::setw(2) << std::setfill('0') << (int) _addr[4] << ':'
 				   << std::setw(2) << std::setfill('0') << (int) _addr[5];
 				return ss.str();
+			}
+
+			//! returns an 8 byte unsigned integer of the address (bytes 0,1 set to 0)
+			uint64_t to_uint64() const
+			{
+				return  (uint64_t) _addr[0] << (5*8) | (uint64_t) _addr[1] << (4*8)
+				      | (uint64_t) _addr[2] << (3*8) | (uint64_t) _addr[3] << (2*8)
+				      | (uint64_t) _addr[4] << (1*8) | (uint64_t) _addr[5] << (0*8);
 			}
 
 			//! writes a mac_addr to a std::ostream in canonical form
@@ -193,6 +207,12 @@ namespace om {
 				ss << (int)(_addr >> 0 & 0xff) << "." << (int)(_addr >> 8 & 0xff)
 				   << '.' << (int)(_addr >> 16 & 0xff) << '.' <<  (int)(_addr >> 24 & 0xff);
 				return ss.str();
+			}
+
+			//! returns a 4 byte unsigned integer of the ip address
+			uint32_t to_uint32() const
+			{
+				return _addr;
 			}
 
 			//! writes an ip4_addr to a std::ostream in dotted decimal notation
