@@ -467,6 +467,16 @@ namespace om {
 				_len = 8;
 			}
 
+			uint8_t type() const
+			{
+				return _icmp->icmp_type;
+			}
+
+			uint8_t code() const
+			{
+				return _icmp->icmp_code;
+			}
+
 		private:
 			icmp* _icmp = nullptr;
 		};

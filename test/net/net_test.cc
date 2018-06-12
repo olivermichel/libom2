@@ -57,6 +57,10 @@ TEST_CASE("net", "[net]")
 		net::ip4_header ip(buf2 + eth.len());
 		CHECK(ip.len() == 20);
 		CHECK(ip.proto() == 6);
+		CHECK(ip.src_addr() == net::ip4_addr("74.125.202.189"));
+		CHECK(ip.dest_addr() == net::ip4_addr("172.16.21.5"));
+		CHECK(ip.id() == 36607);
+		CHECK(ip.ttl() == 57);
 
 		net::tcp_header tcp(buf2 + eth.len() + ip.len());
 		CHECK(tcp.len() == 20);
@@ -73,6 +77,10 @@ TEST_CASE("net", "[net]")
 		net::ip4_header ip(buf3 + eth.len());
 		CHECK(ip.len() == 20);
 		CHECK(ip.proto() == 17);
+		CHECK(ip.src_addr() == net::ip4_addr("172.16.21.1"));
+		CHECK(ip.dest_addr() == net::ip4_addr("172.16.21.5"));
+		CHECK(ip.id() == 17688);
+		CHECK(ip.ttl() == 64);
 
 		net::udp_header udp(buf3 + eth.len() + ip.len());
 		CHECK(udp.len() == 8);
@@ -89,8 +97,14 @@ TEST_CASE("net", "[net]")
 		net::ip4_header ip(buf4 + eth.len());
 		CHECK(ip.len() == 20);
 		CHECK(ip.proto() == 1);
+		CHECK(ip.src_addr() == net::ip4_addr("172.16.21.5"));
+		CHECK(ip.dest_addr() == net::ip4_addr("172.16.21.1"));
+		CHECK(ip.id() == 21599);
+		CHECK(ip.ttl() == 64);
 
 		net::icmp_header icmp(buf4 + eth.len() + ip.len());
 		CHECK(icmp.len() == 8);
+		CHECK(icmp.type() == 3);
+		CHECK(icmp.code() == 3);
 	}
 }

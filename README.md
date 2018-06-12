@@ -27,6 +27,8 @@
     * destinatiion address (dest_addr - ip4_addr)
     
 * ICMP (get only)
+    * type (type - uint8_t)
+    * code (code - uint8_t)
 
 * TCP (set and get)
 
