@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <net/if_arp.h>
 #include <netinet/if_ether.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
@@ -298,6 +299,26 @@ namespace om {
 
 		private:
 			ether_header* _eth = nullptr;
+		};
+
+		class arp_header : public packet_header
+		{
+		public:
+			//! constructs an ethernet header with all fields set to 0
+			arp_header()
+				: packet_header(8 + 20), _arp_hdr((arphdr*) _buf), _ether_arp((ether_arp*) _buf + 8)
+			{ }
+
+			//! constructs an ethernet header from a byte buffer
+			explicit arp_header(const unsigned char* buf_)
+				: packet_header(buf_), _arp_hdr((arphdr*) _buf), _ether_arp((ether_arp*) _buf + 8)
+			{
+				_len = 28;
+			}
+
+		private:
+			arphdr* _arp_hdr = nullptr;
+			ether_arp* _ether_arp = nullptr;
 		};
 
 		//! an ip version 4 header
