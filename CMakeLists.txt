@@ -27,6 +27,23 @@ add_executable(test_runner test/test_runner.cc include/om/om.h
 target_include_directories(test_runner PUBLIC test/include)
 target_include_directories(test_runner PUBLIC include)
 
+add_test(NAME arp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner arp_header)
+add_test(NAME ethernet_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner ethernet_header)
+add_test(NAME ip4_addr WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner ip4_addr)
+add_test(NAME ip4_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner ip4_header)
+add_test(NAME mac_addr WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner mac_addr)
+add_test(NAME socket WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner socket)
+add_test(NAME tcp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner tcp_header)
+add_test(NAME udp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner udp_header)
+
 add_custom_target(doc
         COMMAND doxygen libom.doxyfile
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc)
