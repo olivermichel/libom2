@@ -37,8 +37,10 @@ TEST_CASE("net", "[net]")
 	SECTION("parse an arp packet")
 	{
 		net::ethernet_header eth(buf1);
-		CHECK(eth.ether_type() == 0x0806);
 		CHECK(eth.len() == 14);
+		CHECK(eth.dest_addr() == net::mac_addr(0x000c42a625bc));
+		CHECK(eth.src_addr() == net::mac_addr(0x644bf001535b));
+		CHECK(eth.ether_type() == 0x0806);
 
 		net::arp_header arp(buf1 + eth.len());
 		CHECK(arp.len() == 28);
@@ -47,12 +49,14 @@ TEST_CASE("net", "[net]")
 	SECTION("parse a tcp packet")
 	{
 		net::ethernet_header eth(buf2);
-		CHECK(eth.ether_type() == 0x0800);
 		CHECK(eth.len() == 14);
+		CHECK(eth.dest_addr() == net::mac_addr(0x644bf001535b));
+		CHECK(eth.src_addr() == net::mac_addr(0x000c42a625bc));
+		CHECK(eth.ether_type() == 0x0800);
 
 		net::ip4_header ip(buf2 + eth.len());
-		CHECK(ip.proto() == 6);
 		CHECK(ip.len() == 20);
+		CHECK(ip.proto() == 6);
 
 		net::tcp_header tcp(buf2 + eth.len() + ip.len());
 		CHECK(tcp.len() == 20);
@@ -61,12 +65,14 @@ TEST_CASE("net", "[net]")
 	SECTION("parse an udp packet")
 	{
 		net::ethernet_header eth(buf3);
-		CHECK(eth.ether_type() == 0x0800);
 		CHECK(eth.len() == 14);
+		CHECK(eth.dest_addr() == net::mac_addr(0x644bf001535b));
+		CHECK(eth.src_addr() == net::mac_addr(0x000c42a625bc));
+		CHECK(eth.ether_type() == 0x0800);
 
 		net::ip4_header ip(buf3 + eth.len());
-		CHECK(ip.proto() == 17);
 		CHECK(ip.len() == 20);
+		CHECK(ip.proto() == 17);
 
 		net::udp_header udp(buf3 + eth.len() + ip.len());
 		CHECK(udp.len() == 8);
@@ -75,12 +81,14 @@ TEST_CASE("net", "[net]")
 	SECTION("parse an icmp packet")
 	{
 		net::ethernet_header eth(buf4);
-		CHECK(eth.ether_type() == 0x0800);
 		CHECK(eth.len() == 14);
+		CHECK(eth.dest_addr() == net::mac_addr(0x000c42a625bc));
+		CHECK(eth.src_addr() == net::mac_addr(0x644bf001535b));
+		CHECK(eth.ether_type() == 0x0800);
 
 		net::ip4_header ip(buf4 + eth.len());
-		CHECK(ip.proto() == 1);
 		CHECK(ip.len() == 20);
+		CHECK(ip.proto() == 1);
 
 		net::icmp_header icmp(buf4 + eth.len() + ip.len());
 		CHECK(icmp.len() == 8);
