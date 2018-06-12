@@ -33,4 +33,46 @@ TEST_CASE("net::arp_header", "[net][arp_header]")
 			//TODO: check all fields empty
 		}
 	}
+
+	SECTION("hardware_type")
+	{
+		net::arp_header arp(buf1);
+		CHECK(arp.hardware_type() == 1);
+	}
+
+	SECTION("protocol_type")
+	{
+		net::arp_header arp(buf1);
+		CHECK(arp.protocol_type() == 0x0800);
+	}
+
+	SECTION("operation")
+	{
+		net::arp_header arp(buf1);
+		CHECK(arp.operation() == 2);
+	}
+
+	SECTION("sender_hardware_addr")
+	{
+		net::arp_header arp(buf1);
+		CHECK(arp.sender_hardware_addr() == net::mac_addr(0x787b8a4df09c));
+	}
+
+	SECTION("sender_protocol_addr")
+	{
+		net::arp_header arp(buf1);
+		CHECK(arp.sender_protocol_addr() == net::ip4_addr(0xac101507));
+	}
+
+	SECTION("target_hardware_addr")
+	{
+		net::arp_header arp(buf1);
+		CHECK(arp.target_hardware_addr() == net::mac_addr(0x644bf001535b));
+	}
+
+	SECTION("target_protocol_addr")
+	{
+		net::arp_header arp(buf1);
+		CHECK(arp.target_protocol_addr() == net::ip4_addr(0xac101505));
+	}
 }

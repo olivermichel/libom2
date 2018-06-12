@@ -314,6 +314,42 @@ namespace om {
 				_len = 28;
 			}
 
+			uint16_t hardware_type() const
+			{
+				return reverse_byte_order(_arp_hdr->ar_hrd);
+			}
+
+			uint16_t protocol_type() const
+			{
+				return reverse_byte_order(_arp_hdr->ar_pro);
+			}
+
+			uint16_t operation() const
+			{
+				return reverse_byte_order(_arp_hdr->ar_op);
+			}
+
+			mac_addr sender_hardware_addr() const
+			{
+				return mac_addr(_ether_arp->arp_sha);
+			}
+
+
+			ip4_addr sender_protocol_addr() const
+			{
+				return ip4_addr(_ether_arp->arp_spa);
+			}
+
+			mac_addr target_hardware_addr() const
+			{
+				return mac_addr(_ether_arp->arp_tha);
+			}
+
+			ip4_addr target_protocol_addr() const
+			{
+				return ip4_addr(_ether_arp->arp_tpa);
+			}
+
 		private:
 			arphdr* _arp_hdr = nullptr;
 			ether_arp* _ether_arp = nullptr;
