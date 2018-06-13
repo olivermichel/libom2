@@ -66,7 +66,7 @@ namespace om {
 			mac_addr& operator=(mac_addr&&) = default;
 
 			//! - bytes 0 and 1 are discarded
-			mac_addr(uint64_t addr_)
+			explicit mac_addr(uint64_t addr_)
 			{
 				_addr[0] = (uint8_t)(addr_ >> (5 * 8));
 				_addr[1] = (uint8_t)(addr_ >> (4 * 8));
@@ -145,7 +145,9 @@ namespace om {
 		};
 
 
-		//! an internet protocol version 4 address (RFC 791 - https://tools.ietf.org/html/rfc791)
+		//! An internet protocol version 4 address (RFC 791 - https://tools.ietf.org/html/rfc791)
+		//!
+		//! This class does not convert between host and network byte order.
 		class ip4_addr
 		{
 		public:
@@ -160,41 +162,45 @@ namespace om {
 
 			//! constructs an ip4_addr
 			//! \param addr_ address as 4 byte unsigned integer
-			ip4_addr(uint32_t addr_) : _addr(htonl(addr_)) { }
+			explicit ip4_addr(uint32_t addr_) : _addr(addr_) { }
 
 			//! constructs an ip4_addr
 			//! \param addr_ address as char array in dotted decimal notation
-			ip4_addr(const char* addr_)
+			explicit ip4_addr(const char* addr_)
 			{
-				if ((_addr = inet_addr(addr_)) == -1)
+				int t = ::inet_addr(addr_);
+
+				if (t < 0)
 					throw std::invalid_argument("ip4_addr: invalid argument " + std::string(addr_));
+				else
+					_addr = reverse_byte_order((unsigned) t);
 			}
 
 			//! constructs an ip4_addr
 			//! \param addr_ pointer to a byte buffer
-			ip4_addr(const unsigned char* buf_)
-				: _addr(buf_[0] << 24 | buf_[1] << 16 | buf_[2] << 8 | buf_[3]) { }
+			explicit ip4_addr(const unsigned char* buf_)
+				: _addr(  ((uint32_t)buf_[0]) << (uint8_t) 24
+						| ((uint32_t)buf_[1]) << (uint8_t) 16
+						| ((uint32_t)buf_[2]) << (uint8_t)  8
+						| ((uint32_t)buf_[3]) << (uint8_t)  0) { }
 
 			//! constructs an ip4_addr
 			//! \param addr_ address as std::string in dotted decimal notation
-			ip4_addr(const std::string& addr_)
-			{
-				if ((_addr = inet_addr(addr_.c_str())) == -1)
-					throw std::invalid_argument("ip4_addr: invalid argument " + addr_);
-			}
+			explicit ip4_addr(const std::string& addr_)
+				: ip4_addr(addr_.c_str()) { }
 
 			//! casts an ip4_addr object to a 4 byte unsigned integer in network byte order
-			inline operator uint32_t() const
+			explicit inline operator uint32_t() const
 			{
 				return _addr;
 			}
 
-			inline bool operator<(const ip4_addr& rhs_)
+			inline bool operator<(const ip4_addr& rhs_) const
 			{
 				return _addr < rhs_._addr;
 			}
 
-			inline bool operator==(const ip4_addr& rhs_)
+			inline bool operator==(const ip4_addr& rhs_) const
 			{
 				return _addr == rhs_._addr;
 			}
@@ -203,8 +209,11 @@ namespace om {
 			std::string to_string() const
 			{
 				std::stringstream ss;
-				ss << (int)(_addr >> 0 & 0xff) << "." << (int)(_addr >> 8 & 0xff)
-				   << '.' << (int)(_addr >> 16 & 0xff) << '.' <<  (int)(_addr >> 24 & 0xff);
+				ss << (int)(_addr >> 24 & 0xff) << '.'
+				   << (int)(_addr >> 16 & 0xff) << '.'
+				   << (int)(_addr >>  8 & 0xff) << '.'
+				   << (int)(_addr >>  0 & 0xff);
+
 				return ss.str();
 			}
 
@@ -435,7 +444,7 @@ namespace om {
 
 			void set_src_addr(const ip4_addr& src_addr_)
 			{
-				_ip->ip_src.s_addr = src_addr_;
+				_ip->ip_src.s_addr = src_addr_.to_uint32();
 			}
 
 			ip4_addr dest_addr() const
@@ -445,7 +454,7 @@ namespace om {
 
 			void set_dest_addr(const ip4_addr& dest_addr_)
 			{
-				_ip->ip_dst.s_addr = dest_addr_;
+				_ip->ip_dst.s_addr = dest_addr_.to_uint32();
 			}
 
 		private:
