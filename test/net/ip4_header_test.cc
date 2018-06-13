@@ -89,26 +89,26 @@ TEST_CASE("net::ip4_header", "[net][ip4_header]")
 	SECTION("src_addr")
 	{
 		net::ip4_header ip4(buf1);
-		CHECK(ip4.src_addr() == net::ip4_addr("172.16.21.5"));
+		CHECK(ip4.src_addr() == net::ip4_addr::from_string("172.16.21.5"));
 	}
 
 	SECTION("set_src_addr")
 	{
 		net::ip4_header ip4;
-		ip4.set_src_addr(net::ip4_addr("8.8.4.4"));
-		CHECK(ip4.src_addr() == net::ip4_addr("8.8.4.4"));
+		ip4.set_src_addr(net::ip4_addr::from_string("8.8.4.4"));
+		CHECK(ip4.src_addr() == net::ip4_addr::from_string("8.8.4.4"));
 	}
 
 	SECTION("dest_addr")
 	{
 		net::ip4_header ip4(buf1);
-		CHECK(ip4.dest_addr() == net::ip4_addr("192.30.253.125"));
+		CHECK(ip4.dest_addr() == net::ip4_addr::from_string("192.30.253.125"));
 	}
 
 	SECTION("set_dest_addr")
 	{
 		net::ip4_header ip4;
-		ip4.set_dest_addr(net::ip4_addr("8.8.4.4"));
-		CHECK(ip4.dest_addr() == net::ip4_addr("8.8.4.4"));
+		ip4.set_dest_addr(net::ip4_addr::from_string("8.8.4.4"));
+		CHECK(ip4.dest_addr() == net::ip4_addr::from_string("8.8.4.4"));
 	}
 }

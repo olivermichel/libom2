@@ -154,46 +154,36 @@ namespace om {
 
 			static const unsigned LEN = 4;
 
+			static ip4_addr from_bytes(unsigned char* buf_)
+			{
+				return ip4_addr(buf_[0] << 24 | buf_[1] << 16 | buf_[2] << 8 | buf_[3] << 0);
+			}
+
+			static ip4_addr from_string(char* addr_)
+			{
+				return ip4_addr(addr_);
+			}
+
+			static ip4_addr from_string(std::string addr_)
+			{
+				return ip4_addr(addr_);
+			}
+
+			static ip4_addr from_host(uint32_t addr_)
+			{
+				return ip4_addr(htonl(addr_));
+			}
+
+			static ip4_addr from_net(uint32_t addr_)
+			{
+				return ip4_addr(addr_);
+			}
+
 			//! constructs an ip4_addr and sets the address 0.0.0.0
 			ip4_addr() = default;
 
-			ip4_addr(const ip4_addr& copy_from_) = default;
-			ip4_addr& operator=(const ip4_addr& copy_from_) = default;
-
-			//! constructs an ip4_addr
-			//! \param addr_ address as 4 byte unsigned integer
-			explicit ip4_addr(uint32_t addr_) : _addr(addr_) { }
-
-			//! constructs an ip4_addr
-			//! \param addr_ address as char array in dotted decimal notation
-			explicit ip4_addr(const char* addr_)
-			{
-				int t = ::inet_addr(addr_);
-
-				if (t < 0)
-					throw std::invalid_argument("ip4_addr: invalid argument " + std::string(addr_));
-				else
-					_addr = reverse_byte_order((unsigned) t);
-			}
-
-			//! constructs an ip4_addr
-			//! \param addr_ pointer to a byte buffer
-			explicit ip4_addr(const unsigned char* buf_)
-				: _addr(  ((uint32_t)buf_[0]) << (uint8_t) 24
-						| ((uint32_t)buf_[1]) << (uint8_t) 16
-						| ((uint32_t)buf_[2]) << (uint8_t)  8
-						| ((uint32_t)buf_[3]) << (uint8_t)  0) { }
-
-			//! constructs an ip4_addr
-			//! \param addr_ address as std::string in dotted decimal notation
-			explicit ip4_addr(const std::string& addr_)
-				: ip4_addr(addr_.c_str()) { }
-
-			//! casts an ip4_addr object to a 4 byte unsigned integer in network byte order
-			explicit inline operator uint32_t() const
-			{
-				return _addr;
-			}
+			ip4_addr(const ip4_addr&) = default;
+			ip4_addr& operator=(const ip4_addr&) = default;
 
 			inline bool operator<(const ip4_addr& rhs_) const
 			{
@@ -209,11 +199,10 @@ namespace om {
 			std::string to_string() const
 			{
 				std::stringstream ss;
-				ss << (int)(_addr >> 24 & 0xff) << '.'
-				   << (int)(_addr >> 16 & 0xff) << '.'
-				   << (int)(_addr >>  8 & 0xff) << '.'
-				   << (int)(_addr >>  0 & 0xff);
-
+				ss << (_addr >> 0  & 0x000000ff) << '.';
+				ss << (_addr >> 8  & 0x000000ff) << '.';
+				ss << (_addr >> 16 & 0x000000ff) << '.';
+				ss << (_addr >> 24 & 0x000000ff);
 				return ss.str();
 			}
 
@@ -229,8 +218,22 @@ namespace om {
 				return (os_ << addr_.to_string());
 			}
 
+			static uint32_t parse(const char* str_)
+			{
+				uint32_t addr = 0;
+
+				if((addr = inet_addr(str_)) == -1)
+					throw std::invalid_argument("error");
+
+				return addr;
+			}
+
 		private:
 			uint32_t _addr = 0;
+
+			explicit ip4_addr(uint32_t addr_) : _addr(addr_) { }
+			explicit ip4_addr(std::string addr_) : _addr(parse(addr_.c_str())) { }
+			explicit ip4_addr(const char* addr_) : _addr(parse(addr_)) { }
 		};
 
 		//! base class for network packet headers
@@ -365,7 +368,7 @@ namespace om {
 
 			ip4_addr sender_protocol_addr() const
 			{
-				return ip4_addr(_ether_arp->arp_spa);
+				return ip4_addr::from_bytes(_ether_arp->arp_spa);
 			}
 
 			mac_addr target_hardware_addr() const
@@ -375,7 +378,7 @@ namespace om {
 
 			ip4_addr target_protocol_addr() const
 			{
-				return ip4_addr(_ether_arp->arp_tpa);
+				return ip4_addr::from_bytes(_ether_arp->arp_tpa);
 			}
 
 		private:
@@ -439,7 +442,7 @@ namespace om {
 
 			ip4_addr src_addr() const
 			{
-				return ip4_addr(reverse_byte_order(_ip->ip_src.s_addr));
+				return ip4_addr::from_net(_ip->ip_src.s_addr);
 			}
 
 			void set_src_addr(const ip4_addr& src_addr_)
@@ -449,7 +452,7 @@ namespace om {
 
 			ip4_addr dest_addr() const
 			{
-				return ip4_addr(reverse_byte_order(_ip->ip_dst.s_addr));
+				return ip4_addr::from_net(_ip->ip_dst.s_addr);
 			}
 
 			void set_dest_addr(const ip4_addr& dest_addr_)
