@@ -391,7 +391,11 @@ namespace om {
 		public:
 			//! constructs an ip v4 header with all fields set to 0
 			ip4_header()
-				: packet_header(20), _ip((ip*) _buf)  { }
+				: packet_header(20), _ip((ip*) _buf)
+			{
+				_ip->ip_v  = 4;
+				_ip->ip_hl = 5;
+			}
 
 			//! constructs an ip v4 header from a byte buffer
 			explicit ip4_header(const unsigned char* buf_)
@@ -497,7 +501,9 @@ namespace om {
 		class tcp_header : public packet_header
 		{
 		public:
-			//! constructs a tcp header with all fields set to 0
+			//! constructs a tcp header
+
+			//! all fields except internet header length and protocol version are set to 0
 			tcp_header()
 				: packet_header(20), _tcp((tcphdr*) _buf)  { }
 

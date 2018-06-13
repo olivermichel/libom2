@@ -130,4 +130,63 @@ TEST_CASE("net", "[net]")
 		CHECK(icmp.type() == 3);
 		CHECK(icmp.code() == 3);
 	}
+
+	SECTION("build an ip datagram") {
+
+		const unsigned total_len = 14 + 20;
+
+		unsigned char buf[total_len] = {0};
+		net::ethernet_header eth(buf);
+		net::ip4_header ip(buf + 14);
+
+		for (unsigned i = 0; i < total_len; i++)
+			CHECK(buf[i] == 0);
+
+		eth.set_dest_addr(net::mac_addr(0x2));
+		eth.set_src_addr(net::mac_addr(0x1));
+		eth.set_ether_type(0x0800);
+
+		ip.set_src_addr(net::ip4_addr::from_string("1.2.3.4"));
+		ip.set_dest_addr(net::ip4_addr::from_string("2.4.6.8"));
+		ip.set_total_len(0);
+		ip.set_proto(1);
+		ip.set_ttl(64);
+		ip.set_id(45);
+
+		CHECK(buf[0]  == 0);    // dest addr
+		CHECK(buf[1]  == 0);
+		CHECK(buf[2]  == 0);
+		CHECK(buf[3]  == 0);
+		CHECK(buf[4]  == 0);
+		CHECK(buf[5]  == 2);
+
+		CHECK(buf[6]  == 0);    // source addr
+		CHECK(buf[7]  == 0);
+		CHECK(buf[8]  == 0);
+		CHECK(buf[9]  == 0);
+		CHECK(buf[10] == 0);
+		CHECK(buf[11] == 1);
+
+		CHECK(buf[12] == 0x08); // ether type
+		CHECK(buf[13] == 0x00);
+
+		CHECK(buf[16] == 0);    // total length
+		CHECK(buf[17] == 0);
+
+		CHECK(buf[18] == 0);    // ident
+		CHECK(buf[19] == 45);
+
+		CHECK(buf[22] == 64);   // ttl
+		CHECK(buf[23] == 1);    // proto
+
+		CHECK(buf[26] == 0x01); // source addr
+		CHECK(buf[27] == 0x02);
+		CHECK(buf[28] == 0x03);
+		CHECK(buf[29] == 0x04);
+
+		CHECK(buf[30] == 0x02); // dest addr
+		CHECK(buf[31] == 0x04);
+		CHECK(buf[32] == 0x06);
+		CHECK(buf[33] == 0x08);
+	}
 }
