@@ -49,8 +49,8 @@ TEST_CASE("net::mac_addr", "[net][mac_addr]")
 
 	SECTION("to_string")
 	{
-		auto a1 = net::mac_addr(0x010101010101);
-		CHECK(a1.to_string() == "01:01:01:01:01:01");
+		auto a1 = net::mac_addr(0x010203040506);
+		CHECK(a1.to_string() == "01:02:03:04:05:06");
 	}
 
 	SECTION("to_uint64")
@@ -61,9 +61,9 @@ TEST_CASE("net::mac_addr", "[net][mac_addr]")
 
 	SECTION("operator<<")
 	{
-		auto a1 = net::mac_addr(0x010101010101);
+		auto a1 = net::mac_addr(0x010203040506);
 		std::stringstream ss;
 		ss << a1;
-		CHECK(ss.str() == "01:01:01:01:01:01");
+		CHECK(ss.str() == "01:02:03:04:05:06");
 	}
 }
