@@ -36,25 +36,6 @@ TEST_CASE("net::ip4_addr", "[net][ip4_addr]")
 			CHECK(a1.to_uint32() == 0x02050504);
 		}
 	}
-//
-//	SECTION("_uint32_from_bytes")
-//	{
-//		unsigned char buf[] = { 0x02, 0x05, 0x05, 0x04};
-//		uint32_t a = net::ip4_addr::_uint32_from_bytes(buf);
-//		CHECK(a == 0x02050504);
-//	}
-//
-//	SECTION("_uint32_from_formatted_string")
-//	{
-//		uint32_t a = net::ip4_addr::_uint32_from_formatted_string("5.5.8.9");
-//		CHECK(a == 0x05050809);
-//	}
-//
-//	SECTION("operator uint32_t()")
-//	{
-//		auto a1 = net::ip4_addr::from-string("5.5.8.9");
-//		CHECK(a1.to_uint32() == 0x05050809);
-//	}
 
 	SECTION("to_string")
 	{
@@ -76,6 +57,12 @@ TEST_CASE("net::ip4_addr", "[net][ip4_addr]")
 		std::stringstream ss;
 		ss << a1;
 		CHECK(ss.str() == "5.5.8.9");
+	}
+
+	SECTION("reverse_byte_order")
+	{
+		auto addr = net::ip4_addr::from_string("5.5.8.9");
+		CHECK(net::ip4_addr::reverse_byte_order(addr) == net::ip4_addr::from_string("9.8.5.5"));
 	}
 }
 

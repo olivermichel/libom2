@@ -228,6 +228,11 @@ namespace om {
 				return addr;
 			}
 
+			static ip4_addr reverse_byte_order(const ip4_addr& addr_)
+			{
+				return ip4_addr::from_net(htonl(addr_._addr));
+			}
+
 		private:
 			uint32_t _addr = 0;
 
@@ -364,7 +369,6 @@ namespace om {
 			{
 				return mac_addr(_ether_arp->arp_sha);
 			}
-
 
 			ip4_addr sender_protocol_addr() const
 			{
