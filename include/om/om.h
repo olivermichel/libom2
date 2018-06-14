@@ -682,7 +682,7 @@ namespace om {
 		class poll
 		{
 		public:
-			enum class event : short { in = POLL_IN, out = POLLOUT };
+			enum class event : short { in = POLLIN, out = POLLOUT };
 
 			using callback_t = std::function<void (int, event)>;
 

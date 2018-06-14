@@ -4,3 +4,4 @@ test/include/catch.h
 cmake**/
 doc/html
 doc/latex
+*.swp
