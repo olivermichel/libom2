@@ -161,7 +161,7 @@ namespace om {
 				return ip4_addr(buf_[0] << 24 | buf_[1] << 16 | buf_[2] << 8 | buf_[3] << 0);
 			}
 
-			static ip4_addr from_string(char* addr_)
+			static ip4_addr from_string(const char* addr_)
 			{
 				return ip4_addr(addr_);
 			}
