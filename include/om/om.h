@@ -689,9 +689,14 @@ namespace om {
 
 			poll() = default;
 
-			poll(sys::file_descriptor fd_, callback_t cb_, event events_ = event::in)
+			explicit poll(sys::file_descriptor fd_, callback_t cb_, event events_ = event::in)
 			{
-				add_fd(fd_, cb_, events_);
+				add_fd(fd_, std::move(cb_), events_);
+			}
+
+			explicit poll(int fd_, callback_t cb_, event events_ = event::in)
+			{
+				add_fd(fd_, std::move(cb_), events_);
 			}
 
 			void add_fd(sys::file_descriptor fd_, callback_t cb_, event events_ = event::in)
@@ -701,6 +706,15 @@ namespace om {
 				};
 
 				_callbacks[fd_.fd()] = std::move(cb_);
+			}
+
+			void add_fd(int fd_, callback_t cb_, event events_ = event::in)
+			{
+				_fds[_count_fds++] = {
+					.fd = fd_, .events = static_cast<short>((short) events_), .revents = 0
+				};
+
+				_callbacks[fd_] = std::move(cb_);
 			}
 
 			void block()
