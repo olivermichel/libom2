@@ -719,7 +719,7 @@ namespace om {
 
 			void block()
 			{
-				for (int r = 0; r >= 0; r = ::poll(_fds, _count_fds, 1000)) {
+				for (int r = 0; !_stop && r >= 0; r = ::poll(_fds, _count_fds, 1000)) {
 					if (r > 0) {
 						for (unsigned i = 0; i < _count_fds; i++) {
 
@@ -733,7 +733,13 @@ namespace om {
 				}
 			}
 
+			void stop()
+			{
+				_stop = true;
+			}
+
 		private:
+			bool _stop = false;
 			static const unsigned _FDS_PREALLOC = 8;
 			std::map<int, std::function<void (int, event)>> _callbacks = {};
 			unsigned _count_fds = 0;
