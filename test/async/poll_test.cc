@@ -7,7 +7,7 @@
 TEST_CASE("async::poll", "[async][poll]")
 {
 	const int STDOUT = 1;
-	
+
 	SECTION("stop")
 	{
 		om::async::poll poll;

@@ -83,6 +83,19 @@ namespace om {
 				for (unsigned i = 0; i < LEN; i++) _addr[i] = buf_[i];
 			}
 
+			explicit mac_addr(const std::string& str_)
+			{
+				int temp[6] = {0};
+
+
+				if (std::sscanf(str_.c_str(), "%x:%x:%x:%x:%x:%x",
+								&temp[0], &temp[1], &temp[2], &temp[3], &temp[4], &temp[5]) != 6)
+					throw std::invalid_argument("mac_addr: invalid address format");
+
+				for (unsigned i = 0; i < 6; i++)
+					_addr[i] = (uint8_t) temp[i];
+			}
+
 			//! casts to an 8 byte unsigned integer of the address (bytes 0,1 set to 0)
 			explicit operator uint64_t() const
 			{

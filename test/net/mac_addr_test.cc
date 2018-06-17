@@ -39,6 +39,21 @@ TEST_CASE("net::mac_addr", "[net][mac_addr]")
 			CHECK(buf1[4] == buf2[4]);
 			CHECK(buf1[5] == buf2[5]);
 		}
+
+		SECTION("can be constructed from a formatted string")
+		{
+			std::string str1 = "01:02:03:04:05:06";
+			std::string str2 = "1:2:3:4:5:6";
+
+			CHECK_NOTHROW(net::mac_addr(str1));
+			CHECK_NOTHROW(net::mac_addr(str2));
+
+			net::mac_addr addr1(str1);
+			net::mac_addr addr2(str2);
+
+			CHECK(addr1.to_uint64() == 0x010203040506);
+			CHECK(addr2.to_uint64() == 0x010203040506);
+		}
 	}
 
 	SECTION("operator uint64_t()")
