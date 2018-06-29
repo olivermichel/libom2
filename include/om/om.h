@@ -21,7 +21,26 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+/*
+namespace om {
+	namespace net {
+		class mac_addr;
+		class ip4_addr;
+	}
+}
 
+namespace std {
+	template <> class hash<om::net::mac_addr> {
+	public:
+		std::size_t operator()(const om::net::mac_addr& a) const;
+	};
+
+	template <> class hash<om::net::ip4_addr> {
+	public:
+		std::size_t operator()(const om::net::ip4_addr& a) const;
+	};
+}
+*/
 namespace om {
 
 	namespace sys {
@@ -54,6 +73,8 @@ namespace om {
 		//! a media access control address (IEEE 802)
 		class mac_addr
 		{
+//			friend class std::hash<mac_addr>;
+
 		public:
 
 			static const unsigned LEN = 6;
@@ -165,6 +186,8 @@ namespace om {
 		//! This class does not convert between host and network byte order.
 		class ip4_addr
 		{
+//			friend class std::hash<ip4_addr>;
+
 		public:
 
 			static const unsigned LEN = 4;
@@ -764,6 +787,24 @@ namespace om {
 			return ((short) lhs_ & (short) rhs_);
 		}
 	}
+}
+
+namespace std {
+	template<> struct hash<om::net::mac_addr>
+	{
+		std::size_t operator()(om::net::mac_addr const& a) const
+		{
+			return a.to_uint64();
+		}
+	};
+
+	template<> struct hash<om::net::ip4_addr>
+	{
+		std::size_t operator()(om::net::ip4_addr const& a) const
+		{
+			return a.to_uint32();
+		}
+	};
 }
 
 #endif

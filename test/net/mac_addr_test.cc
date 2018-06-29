@@ -81,4 +81,10 @@ TEST_CASE("net::mac_addr", "[net][mac_addr]")
 		ss << a1;
 		CHECK(ss.str() == "01:02:03:04:05:06");
 	}
+
+	SECTION("hash<mac_addr>()")
+	{
+		auto a1 = net::mac_addr(0x010203040506);
+		CHECK(std::hash<net::mac_addr>()(a1) == 0x010203040506);
+	}
 }

@@ -64,5 +64,11 @@ TEST_CASE("net::ip4_addr", "[net][ip4_addr]")
 		auto addr = net::ip4_addr::from_string("5.5.8.9");
 		CHECK(net::ip4_addr::reverse_byte_order(addr) == net::ip4_addr::from_string("9.8.5.5"));
 	}
+
+	SECTION("hash<ip4_addr>()")
+	{
+		auto a1 = net::ip4_addr::from_string("5.5.8.9");
+		CHECK(std::hash<net::ip4_addr>()(a1) == 0x9080505);
+	}
 }
 
