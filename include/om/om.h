@@ -21,26 +21,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-/*
-namespace om {
-	namespace net {
-		class mac_addr;
-		class ip4_addr;
-	}
-}
 
-namespace std {
-	template <> class hash<om::net::mac_addr> {
-	public:
-		std::size_t operator()(const om::net::mac_addr& a) const;
-	};
-
-	template <> class hash<om::net::ip4_addr> {
-	public:
-		std::size_t operator()(const om::net::ip4_addr& a) const;
-	};
-}
-*/
 namespace om {
 
 	namespace sys {
