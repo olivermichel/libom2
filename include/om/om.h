@@ -808,12 +808,23 @@ namespace om {
 		{
 		public:
 			explicit simple_binary_reader(const std::string& file_name_)
-				: _file_stream(file_name_, std::ios::binary | std::ios::out)
+				: _file_stream(file_name_, std::ios::binary | std::ios::in)
 			{
 				if (!_file_stream.is_open())
 					throw std::runtime_error("simple_binary_writer: could not open " + file_name_);
 			}
 
+			bool next(T& t_)
+			{
+				_file_stream.read((char*) &t_, sizeof(T));
+				_done = _file_stream.tellg() == std::istream::pos_type(-1);
+				return !_done;
+			}
+
+			bool done() const
+			{
+				return _done;
+			}
 
 			void close()
 			{
@@ -826,8 +837,8 @@ namespace om {
 					_file_stream.close();
 			}
 
-
 		private:
+			bool _done = false;
 			std::fstream _file_stream;
 		};
 	}
