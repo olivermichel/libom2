@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstring>
 #include <functional>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -767,6 +768,41 @@ namespace om {
 		{
 			return ((short) lhs_ & (short) rhs_);
 		}
+	}
+
+	namespace file {
+
+		template <typename T>
+		class simple_binary_writer
+		{
+		public:
+			explicit simple_binary_writer(const std::string& file_name_)
+				: _file_stream(file_name_, std::ios::binary | std::ios::out)
+			{
+				if (!_file_stream.is_open())
+					throw std::runtime_error("simple_binary_writer: could not open " + file_name_);
+			}
+
+			void write(const T& t_)
+			{
+				_file_stream.write((char*)&t_, sizeof(T));
+			}
+
+			void close()
+			{
+				_file_stream.close();
+			}
+
+			~simple_binary_writer()
+			{
+				if (_file_stream.is_open())
+					_file_stream.close();
+			}
+
+		private:
+			std::fstream _file_stream;
+		};
+
 	}
 }
 

@@ -15,6 +15,7 @@ enable_testing()
 
 add_executable(test_runner test/test_runner.cc include/om/om.h
         test/async/poll_test.cc
+        test/file/simple_binary_writer_test.cc
         test/net/arp_header_test.cc
         test/net/ethernet_header_test.cc
         test/net/icmp_header_test.cc
@@ -46,6 +47,8 @@ add_test(NAME net WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner net)
 add_test(NAME packet_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner packet_header)
+add_test(NAME simple_binary_writer WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner simple_binary_writer)
 add_test(NAME socket WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner socket)
 add_test(NAME tcp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
