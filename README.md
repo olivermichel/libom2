@@ -1,5 +1,7 @@
 # libom2
 
+[![Build Status](https://travis-ci.org/olivermichel/libom2.svg?branch=master)](https://travis-ci.org/olivermichel/libom2)
+
 ## net
 
 ### Headers and Header Fields
