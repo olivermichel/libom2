@@ -803,6 +803,33 @@ namespace om {
 			std::fstream _file_stream;
 		};
 
+		template <typename T>
+		class simple_binary_reader
+		{
+		public:
+			explicit simple_binary_reader(const std::string& file_name_)
+				: _file_stream(file_name_, std::ios::binary | std::ios::out)
+			{
+				if (!_file_stream.is_open())
+					throw std::runtime_error("simple_binary_writer: could not open " + file_name_);
+			}
+
+
+			void close()
+			{
+				_file_stream.close();
+			}
+
+			~simple_binary_reader()
+			{
+				if (_file_stream.is_open())
+					_file_stream.close();
+			}
+
+
+		private:
+			std::fstream _file_stream;
+		};
 	}
 }
 

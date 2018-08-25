@@ -5,3 +5,4 @@ cmake**/
 doc/html
 doc/latex
 *.swp
+/*.test_format
