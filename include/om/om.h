@@ -772,85 +772,73 @@ namespace om {
 
 	namespace file {
 
-		template <typename T>
-		class simple_binary_writer
+		class _file_stream
 		{
 		public:
-			explicit simple_binary_writer(const std::string& file_name_)
-				: _file_stream(file_name_, std::ios::binary | std::ios::out)
+			//! opens a file in the specified openmode, throws std::runtime_error upon error
+			explicit _file_stream(const std::string& file_name_, std::ios::openmode open_mode_)
+				: _stream(file_name_, open_mode_)
 			{
-				if (!_file_stream.is_open())
-					throw std::runtime_error("simple_binary_writer: could not open " + file_name_);
-			}
-
-			void write(const T& t_)
-			{
-				_file_stream.write((char*)&t_, sizeof(T));
-			}
-
-			void close()
-			{
-				_file_stream.close();
-			}
-
-			~simple_binary_writer()
-			{
-				if (_file_stream.is_open())
-					_file_stream.close();
-			}
-
-		private:
-			std::fstream _file_stream;
-		};
-
-		template <typename T>
-		class simple_binary_reader
-		{
-		public:
-			explicit simple_binary_reader(const std::string& file_name_)
-				: _file_stream(file_name_, std::ios::binary | std::ios::in)
-			{
-				if (!_file_stream.is_open())
-					throw std::runtime_error("simple_binary_reader: could not open " + file_name_);
-			}
-
-			//! reads the next element into t_
-			bool next(T& t_)
-			{
-				_file_stream.read((char*) &t_, sizeof(T));
-				_done = _file_stream.tellg() == std::istream::pos_type(-1);
-				return !_done;
-			}
-
-			//! returns true if the reader has reached EOF, else false, is reset by reset()
-			bool done() const
-			{
-				return _done;
+				if (!_stream.is_open())
+					throw std::runtime_error("om::file::_file_stream: could not open " + file_name_);
 			}
 
 			//! sets the read cursor to the beginning of the file
 			void reset()
 			{
-				_file_stream.clear();
-				_file_stream.seekg(0, std::ios::beg);
-				_done = false;
+				_stream.clear();
+				_stream.seekg(0, std::ios::beg);
 			}
 
 			//! closes the underlying file
 			void close()
 			{
-				_file_stream.close();
+				_stream.close();
 			}
 
-			~simple_binary_reader()
+			//! returns true if the file pointer was advanced beyond the end of the file
+			bool done()
 			{
-				if (_file_stream.is_open())
-					_file_stream.close();
+				return _stream.tellg() == std::istream::pos_type(-1);
 			}
 
-		private:
-			bool _done = false;
-			std::fstream _file_stream;
+			virtual ~_file_stream()
+			{
+				if (_stream.is_open())
+					_stream.close();
+			}
+
+		protected:
+			std::fstream _stream;
+		};
+
+		template <typename T>
+		class simple_binary_reader : public _file_stream
+		{
+		public:
+			explicit simple_binary_reader(const std::string& file_name_)
+				: _file_stream(file_name_, std::ios::binary | std::ios::in) { }
+
+			//! reads the next element into t_
+			bool next(T& t_)
+			{
+				_stream.read((char*) &t_, sizeof(T));
+				return !done();
+			}
+		};
+
+		template <typename T>
+		class simple_binary_writer : public _file_stream
+		{
+		public:
+			explicit simple_binary_writer(const std::string& file_name_)
+				: _file_stream(file_name_, std::ios::binary | std::ios::out) { }
+
+			//! writes t_ to the file
+			void write(const T& t_)
+			{
+				_stream.write((char*)&t_, sizeof(T));
+			}
 		};
 	}
 }
