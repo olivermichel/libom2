@@ -811,7 +811,7 @@ namespace om {
 				: _file_stream(file_name_, std::ios::binary | std::ios::in)
 			{
 				if (!_file_stream.is_open())
-					throw std::runtime_error("simple_binary_writer: could not open " + file_name_);
+					throw std::runtime_error("simple_binary_reader: could not open " + file_name_);
 			}
 
 			bool next(T& t_)
