@@ -814,6 +814,7 @@ namespace om {
 					throw std::runtime_error("simple_binary_reader: could not open " + file_name_);
 			}
 
+			//! reads the next element into t_
 			bool next(T& t_)
 			{
 				_file_stream.read((char*) &t_, sizeof(T));
@@ -821,11 +822,21 @@ namespace om {
 				return !_done;
 			}
 
+			//! returns true if the reader has reached EOF, else false, is reset by reset()
 			bool done() const
 			{
 				return _done;
 			}
 
+			//! sets the read cursor to the beginning of the file
+			void reset()
+			{
+				_file_stream.clear();
+				_file_stream.seekg(0, std::ios::beg);
+				_done = false;
+			}
+
+			//! closes the underlying file
 			void close()
 			{
 				_file_stream.close();
