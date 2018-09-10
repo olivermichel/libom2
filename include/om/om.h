@@ -827,44 +827,61 @@ namespace om {
 		};
 
 		template <typename T>
-		class simple_binary_reader : public _file_stream
+		class simple_binary_reader
 		{
 		public:
-			explicit simple_binary_reader(const std::string& file_name_)
-				: _file_stream(file_name_, std::ios::binary | std::ios::in) { }
+			explicit simple_binary_reader(const std::string& file_name_, bool use_buffer_ = false)
+				: _use_buffer(use_buffer_),
+				  _data(),
+				  _stream(file_name_, std::ios::binary | std::ios::in)
 
-			//! reads the next element into t_
+			{
+				if (!_stream.is_open())
+					throw std::runtime_error("om::file::simple_binary_reader: could not open "
+					+ file_name_);
+
+				T t;
+
+				if (_use_buffer) {
+					while (!_eof()) {
+						_stream.read((char*) &t, sizeof(T));
+						_data.push_back(t);
+					}
+					_iter = std::begin(_data);
+				}
+			}
+
 			bool next(T& t_)
 			{
-				_stream.read((char*) &t_, sizeof(T));
+				if (_use_buffer)
+					t_ = *(_iter++);
+				else
+					_stream.read((char*) &t_, sizeof(T));
+
 				return !done();
 			}
-		};
 
-		template <typename T>
-		class simple_buffered_binary_reader
-		{
-		public:
-			explicit simple_buffered_binary_reader(const std::string& file_name_)
-				: _data(),
-				  _stream(file_name_, std::ios::binary | std::ios::in)
+			void reset()
 			{
-				while (_stream.good()) {
-					_stream.read((char*) &_t, sizeof(T));
-					_data.push_back(_t);
-				}
-
-				_iter = std::begin(_data);
+				if (_use_buffer)
+					_iter = std::begin(_data);
+				else
+					_stream.clear(), _stream.seekg(0, std::ios::beg);
 			}
 
-			bool next(T& t_)
+			bool done()
 			{
-				t_ = *(_iter++);
-				return _iter != _data.end();
+				return _use_buffer ? _iter == _data.end() : _eof();
 			}
 
 		private:
-			T _t;
+
+			bool _eof()
+			{
+				return _stream.tellg() == std::istream::pos_type(-1);
+			}
+
+			bool _use_buffer;
 			std::vector<T> _data;
 			std::fstream _stream;
 			typename std::vector<T>::const_iterator _iter;

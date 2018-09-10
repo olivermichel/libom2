@@ -12,38 +12,43 @@ TEST_CASE("file::simple_binary_reader", "[file][simple_binary_reader]")
 		CHECK_THROWS(file::simple_binary_reader<test_format>("does/not/exist.format"));
 	}
 
-	SECTION("read")
+	SECTION("read - not buffered")
 	{
 		unsigned count = 0;
 		test_format f { };
-		file::simple_binary_reader<test_format> reader("test/data/test.test_format");
+		file::simple_binary_reader<test_format> reader("test/data/test.test_format", false);
 		while (reader.next(f)) count++;
 		CHECK(count == 2);
 		CHECK(reader.done());
+
+		SECTION("reset")
+		{
+			reader.reset();
+			CHECK(!reader.done());
+
+			while (reader.next(f)) count++;
+			CHECK(count == 4);
+			CHECK(reader.done());
+		}
 	}
 
-	SECTION("read 2")
+	SECTION("read - buffered")
 	{
 		unsigned count = 0;
 		test_format f { };
-		file::simple_buffered_binary_reader<test_format> reader("test/data/test.test_format");
-		while (reader.next(f)) count++;
-//		CHECK(count == 2);
-////		CHECK(reader.done());
-	}
-
-
-	SECTION("reset")
-	{
-		unsigned count = 0;
-		test_format f { };
-		file::simple_binary_reader<test_format> reader("test/data/test.test_format");
+		file::simple_binary_reader<test_format> reader("test/data/test.test_format", true);
 		while (reader.next(f)) count++;
 		CHECK(count == 2);
 		CHECK(reader.done());
-		reader.reset();
-		CHECK_FALSE(reader.done());
-		while (reader.next(f)) count++;
-		CHECK(count == 4);
+
+		SECTION("reset")
+		{
+			reader.reset();
+			CHECK(!reader.done());
+
+			while (reader.next(f)) count++;
+			CHECK(count == 4);
+			CHECK(reader.done());
+		}
 	}
 }
