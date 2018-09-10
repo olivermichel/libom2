@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <vector>
 
 namespace om {
 
@@ -838,6 +839,35 @@ namespace om {
 				_stream.read((char*) &t_, sizeof(T));
 				return !done();
 			}
+		};
+
+		template <typename T>
+		class simple_buffered_binary_reader
+		{
+		public:
+			explicit simple_buffered_binary_reader(const std::string& file_name_)
+				: _data(),
+				  _stream(file_name_, std::ios::binary | std::ios::in)
+			{
+				while (_stream.good()) {
+					_stream.read((char*) &_t, sizeof(T));
+					_data.push_back(_t);
+				}
+
+				_iter = std::begin(_data);
+			}
+
+			bool next(T& t_)
+			{
+				t_ = *(_iter++);
+				return _iter != _data.end();
+			}
+
+		private:
+			T _t;
+			std::vector<T> _data;
+			std::fstream _stream;
+			typename std::vector<T>::const_iterator _iter;
 		};
 
 		template <typename T>

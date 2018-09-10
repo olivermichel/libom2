@@ -22,6 +22,17 @@ TEST_CASE("file::simple_binary_reader", "[file][simple_binary_reader]")
 		CHECK(reader.done());
 	}
 
+	SECTION("read 2")
+	{
+		unsigned count = 0;
+		test_format f { };
+		file::simple_buffered_binary_reader<test_format> reader("test/data/test.test_format");
+		while (reader.next(f)) count++;
+//		CHECK(count == 2);
+////		CHECK(reader.done());
+	}
+
+
 	SECTION("reset")
 	{
 		unsigned count = 0;
