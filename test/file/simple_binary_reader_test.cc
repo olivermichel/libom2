@@ -10,7 +10,6 @@ TEST_CASE("file::simple_binary_reader", "[file][simple_binary_reader]")
 	SECTION("simple_binary_reader")
 	{
 		CHECK_THROWS(file::simple_binary_reader<test_format>("does/not/exist.format"));
-//		CHECK_NOTHROW(file::simple_binary_reader<test_format>("test/data/test.test_format"));
 	}
 
 	SECTION("read")

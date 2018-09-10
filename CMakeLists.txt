@@ -13,8 +13,9 @@ endif ()
 
 enable_testing()
 
-add_executable(test_runner test/test_runner.cc include/om/om.h
+add_executable(test_runner test/test_runner.cc
         test/async/poll_test.cc
+        test/file/file_test.cc
         test/file/simple_binary_reader_test.cc
         test/file/simple_binary_writer_test.cc
         test/net/arp_header_test.cc
@@ -27,7 +28,8 @@ add_executable(test_runner test/test_runner.cc include/om/om.h
         test/net/packet_header_test.cc
         test/net/socket_test.cc
         test/net/tcp_header_test.cc
-        test/net/udp_header_test.cc)
+        test/net/udp_header_test.cc
+        test/sys/sys_test.cc)
 
 target_include_directories(test_runner PUBLIC test/include)
 target_include_directories(test_runner PUBLIC include)
@@ -36,6 +38,8 @@ add_test(NAME arp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner arp_header)
 add_test(NAME ethernet_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner ethernet_header)
+add_test(NAME file WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner file)
 add_test(NAME icmp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner icmp_header)
 add_test(NAME ip4_addr WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -58,6 +62,8 @@ add_test(NAME tcp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner tcp_header)
 add_test(NAME udp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner udp_header)
+add_test(NAME sys WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner sys)
 
 add_custom_target(doc
         COMMAND doxygen libom.doxyfile

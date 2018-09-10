@@ -19,7 +19,9 @@
 #include <poll.h>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -771,6 +773,17 @@ namespace om {
 	}
 
 	namespace file {
+
+		inline unsigned long size(const std::string& file_name_)
+		{
+			struct stat st {};
+
+			if (stat(file_name_.c_str(), &st) < 0)
+				throw std::runtime_error("size: could not determine file size: errno: "
+										 + std::to_string(errno));
+
+			return (unsigned long)(st.st_size);
+		}
 
 		class _file_stream
 		{
