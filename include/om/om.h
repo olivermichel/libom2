@@ -794,28 +794,16 @@ namespace om {
 				: _stream(file_name_, open_mode_)
 			{
 				if (!_stream.is_open())
-					throw std::runtime_error("om::file::_file_stream: could not open " + file_name_);
-			}
-
-			//! sets the read cursor to the beginning of the file
-			void reset()
-			{
-				_stream.clear();
-				_stream.seekg(0, std::ios::beg);
+					throw std::runtime_error("om::file::_file_stream: could not open " +file_name_);
 			}
 
 			//! closes the underlying file
-			void close()
+			virtual void close()
 			{
 				_stream.close();
 			}
 
-			//! returns true if the file pointer was advanced beyond the end of the file
-			bool done()
-			{
-				return _stream.tellg() == std::istream::pos_type(-1);
-			}
-
+			//! closes the underlying file if it is open
 			virtual ~_file_stream()
 			{
 				if (_stream.is_open())
@@ -823,23 +811,33 @@ namespace om {
 			}
 
 		protected:
+
+			//! returns true if the file pointer was advanced beyond the end of the file
+			bool _eof()
+			{
+				return _stream.tellg() == std::istream::pos_type(-1);
+			}
+
+			//! sets the read cursor to the beginning of the file
+			void _reset()
+			{
+				_stream.clear();
+				_stream.seekg(0, std::ios::beg);
+			}
+
 			std::fstream _stream;
 		};
 
 		template <typename T>
-		class simple_binary_reader
+		class simple_binary_reader : public _file_stream
 		{
 		public:
 			explicit simple_binary_reader(const std::string& file_name_, bool use_buffer_ = false)
-				: _use_buffer(use_buffer_),
-				  _data(),
-				  _stream(file_name_, std::ios::binary | std::ios::in)
+				: _file_stream(file_name_, std::ios::binary | std::ios::in),
+				  _use_buffer(use_buffer_),
+				  _data()
 
 			{
-				if (!_stream.is_open())
-					throw std::runtime_error("om::file::simple_binary_reader: could not open "
-					+ file_name_);
-
 				T t;
 
 				if (_use_buffer) {
@@ -866,7 +864,7 @@ namespace om {
 				if (_use_buffer)
 					_iter = std::begin(_data);
 				else
-					_stream.clear(), _stream.seekg(0, std::ios::beg);
+					_reset();
 			}
 
 			bool done()
@@ -874,16 +872,11 @@ namespace om {
 				return _use_buffer ? _iter == _data.end() : _eof();
 			}
 
+			virtual ~simple_binary_reader() = default;
+
 		private:
-
-			bool _eof()
-			{
-				return _stream.tellg() == std::istream::pos_type(-1);
-			}
-
 			bool _use_buffer;
 			std::vector<T> _data;
-			std::fstream _stream;
 			typename std::vector<T>::const_iterator _iter;
 		};
 
