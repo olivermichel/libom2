@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <net/if.h>
 #include <netinet/if_ether.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -25,6 +26,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
+#include <sys/ioctl.h>
 
 namespace om {
 
@@ -38,6 +40,61 @@ namespace om {
 		protected:
 			int _fd = -1;
 		};
+
+		inline unsigned write_uint16(uint16_t val_, char* buf_)
+		{
+			buf_[0] = (val_ >> 8) & 0xff;
+			buf_[1] = (val_ >> 0) & 0xff;
+			return 2;
+		}
+
+		inline unsigned write_uint32(uint32_t val_, char* buf_)
+		{
+			buf_[0] = (val_ >> 24) & 0xff;
+			buf_[1] = (val_ >> 16) & 0xff;
+			buf_[2] = (val_ >>  8) & 0xff;
+			buf_[3] = (val_ >>  0) & 0xff;
+			return 4;
+		}
+
+		inline unsigned write_uint64(uint64_t val_, char* buf_)
+		{
+			buf_[0] = (val_ >> 56) & 0xff;
+			buf_[1] = (val_ >> 48) & 0xff;
+			buf_[2] = (val_ >> 40) & 0xff;
+			buf_[3] = (val_ >> 32) & 0xff;
+			buf_[4] = (val_ >> 24) & 0xff;
+			buf_[5] = (val_ >> 16) & 0xff;
+			buf_[6] = (val_ >>  8) & 0xff;
+			buf_[7] = (val_ >>  0) & 0xff;
+			return 8;
+		}
+
+		inline uint16_t read_uint16(const char* buf_)
+		{
+			return  ((((uint16_t) buf_[0]) << 8) & 0xff00)
+				  | ((((uint16_t) buf_[1]) << 0) & 0x00ff);
+		}
+
+		inline uint32_t read_uint32(const char* buf_)
+		{
+			return  ((((uint32_t) buf_[0]) << 24) & 0xff000000)
+			      | ((((uint32_t) buf_[1]) << 16) & 0x00ff0000)
+				  | ((((uint32_t) buf_[2]) <<  8) & 0x0000ff00)
+			      | ((((uint32_t) buf_[3]) <<  0) & 0x000000ff);
+		}
+
+		inline uint64_t read_uint64(const char* buf_)
+		{
+			return ((((uint64_t) buf_[0]) << 56) & 0xff00000000000000)
+			     | ((((uint64_t) buf_[1]) << 48) & 0x00ff000000000000)
+			     | ((((uint64_t) buf_[2]) << 40) & 0x0000ff0000000000)
+			     | ((((uint64_t) buf_[3]) << 32) & 0x000000ff00000000)
+			     | ((((uint64_t) buf_[4]) << 24) & 0x00000000ff000000)
+			     | ((((uint64_t) buf_[5]) << 16) & 0x0000000000ff0000)
+			     | ((((uint64_t) buf_[6]) <<  8) & 0x000000000000ff00)
+			     | ((((uint64_t) buf_[7]) <<  0) & 0x00000000000000ff);
+		}
 	}
 
 	namespace net {
@@ -638,7 +695,7 @@ namespace om {
 							  + std::to_string(errno));
 			}
 
-			void bind(std::string ip_addr_, unsigned short port_ = 0)
+			void bind(const std::string& ip_addr_, unsigned short port_ = 0)
 			{
 				struct sockaddr_in in_addr {};
 				in_addr.sin_family = AF_INET;
