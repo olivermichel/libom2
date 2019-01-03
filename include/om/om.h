@@ -2,7 +2,6 @@
 #ifndef LIBOM2_H
 #define LIBOM2_H
 
-#include <queue>
 #include <arpa/inet.h>
 #include <cstdio>
 #include <cstring>
@@ -19,6 +18,7 @@
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 #include <poll.h>
+#include <queue>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -26,6 +26,7 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <thread>
 #include <unistd.h>
 #include <vector>
 
@@ -1003,6 +1004,68 @@ namespace om {
 			mutable std::mutex _mutex;
 			std::queue<T> _queue;
 			std::condition_variable _condition;
+		};
+
+		class thread_joiner
+		{
+		public:
+			explicit thread_joiner(std::vector<std::thread>& threads_) : _threads(threads_) { }
+
+			~thread_joiner()
+			{
+				for (auto& t : _threads)
+					if (t.joinable()) t.join();
+			}
+
+		private:
+			std::vector<std::thread>& _threads;
+		};
+
+		class thread_pool
+		{
+		public:
+			thread_pool() : _done(false), _joiner(_threads)
+			{
+				unsigned const thread_count=std::thread::hardware_concurrency();
+
+				try {
+					for (unsigned i=0; i < thread_count; ++i)
+						_threads.emplace_back(std::thread(&thread_pool::_worker_thread, this));
+				} catch(...) {
+					_done = true;
+					throw;
+				}
+			}
+
+			~thread_pool()
+			{
+				_done = true;
+			}
+
+			template<typename Fx>
+			void submit(Fx f)
+			{
+				_task_queue.enqueue(std::function<void()>(f));
+			}
+
+		private:
+			std::atomic_bool _done;
+			queue<std::function<void()>> _task_queue;
+			std::vector<std::thread> _threads;
+			thread_joiner _joiner;
+
+			void _worker_thread()
+			{
+				while (!_done) {
+					std::function<void()> task;
+
+					if (_task_queue.dequeue(task)) {
+						task();
+					} else {
+						std::this_thread::yield();
+					}
+				}
+			}
 		};
 	}
 }
