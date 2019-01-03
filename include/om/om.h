@@ -2,11 +2,12 @@
 #ifndef LIBOM2_H
 #define LIBOM2_H
 
+#include <queue>
 #include <arpa/inet.h>
 #include <cstdio>
 #include <cstring>
-#include <functional>
 #include <fstream>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -21,12 +22,12 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
-#include <sys/ioctl.h>
 
 namespace om {
 
@@ -949,6 +950,59 @@ namespace om {
 			{
 				_stream.write((char*)&t_, sizeof(T));
 			}
+		};
+	}
+
+	namespace concurrency
+	{
+		//! a simple thread-safe wrapper around std::queue
+		template<typename T>
+		class queue
+		{
+		public:
+			queue() = default;
+
+			//! enqueues an element
+			void enqueue(T item_)
+			{
+				std::lock_guard<std::mutex> lock(_mutex);
+				_queue.push(std::move(item_));
+				_condition.notify_one();
+			}
+
+			//! dequeues an element, blocks if the queue is empty
+			void dequeue_wait(T& item_)
+			{
+				std::unique_lock<std::mutex> lock(_mutex);
+				_condition.wait(lock, [this]() { return !_queue.empty(); });
+				item_ = std::move(_queue.front());
+				_queue.pop();
+			}
+
+			//! tries to dequeue an element, returns false if queue is empty
+			bool dequeue(T& item_)
+			{
+				std::lock_guard<std::mutex> lock(_mutex);
+
+				if(_queue.empty())
+					return false;
+
+				item_ = std::move(_queue.front());
+				_queue.pop();
+				return true;
+			}
+
+			//! checks if the queue is empty
+			bool empty() const
+			{
+				std::lock_guard<std::mutex> lock(_mutex);
+				return _queue.empty();
+			}
+
+		private:
+			mutable std::mutex _mutex;
+			std::queue<T> _queue;
+			std::condition_variable _condition;
 		};
 	}
 }
