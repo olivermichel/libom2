@@ -954,8 +954,8 @@ namespace om {
 		};
 	}
 
-	namespace concurrency
-	{
+	namespace concurrency {
+
 		//! a simple thread-safe wrapper around std::queue
 		template<typename T>
 		class queue
@@ -1067,6 +1067,58 @@ namespace om {
 				}
 			}
 		};
+	}
+
+	namespace etc {
+
+		std::string format_ptr(void* ptr_)
+		{
+			std::stringstream ss;
+			ss << "0x" << std::hex << std::setw(16) << std::setfill('0') << (uint64_t) ptr_;
+			return ss.str();
+		}
+
+		void print_bytes(const char* buf_, unsigned len_, bool format_ = true,
+						 std::ostream& os_ = std::cout) // handling of ios flags not thread-safe
+		{
+			if (format_) os_ << "    0  ";
+
+			for (auto i = 0; i < len_; i++) {
+				if (format_ && i > 0 && i % 8 == 0)
+					os_ << std::endl << std::setw(5) << std::setfill(' ') << std::dec << i << "  ";
+				os_ << " " << std::hex << std::setfill('0') << std::setw(2)
+					<< ((int) buf_[i] & 0xff);
+			}
+
+			os_ << std::dec << std::endl;
+		}
+
+		std::string format_bytes(const char* buf_, unsigned len_, bool format_ = true)
+		{
+			std::stringstream ss;
+			print_bytes(buf_, len_, format_, ss);
+			return ss.str();
+		}
+
+		std::chrono::time_point<std::chrono::high_resolution_clock> now()
+		{
+			return std::chrono::high_resolution_clock::now();
+		}
+
+		unsigned long long microseconds_since(
+			std::chrono::time_point<std::chrono::high_resolution_clock> start_)
+		{
+			auto end = std::chrono::high_resolution_clock::now();
+			auto dur = std::chrono::duration_cast<std::chrono::microseconds>(end - start_);
+			return (unsigned) dur.count();
+		}
+
+		double seconds_since(std::chrono::time_point<std::chrono::high_resolution_clock> start_)
+		{
+			auto end = std::chrono::high_resolution_clock::now();
+			auto dur = std::chrono::duration_cast<std::chrono::microseconds>(end - start_);
+			return (double) dur.count() / 1000000;
+		}
 	}
 }
 
