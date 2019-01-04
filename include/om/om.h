@@ -3,6 +3,7 @@
 #define LIBOM2_H
 
 #include <arpa/inet.h>
+#include <condition_variable>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -10,6 +11,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <mutex>
 #include <net/if.h>
 #include <netinet/if_ether.h>
 #include <netinet/in.h>
