@@ -1,8 +1,6 @@
 
-
 #include <catch.h>
 #include <om/om.h>
-#include <list>
 
 using namespace om;
 
