@@ -15,6 +15,7 @@ enable_testing()
 
 add_executable(test_runner test/test_runner.cc
         test/async/poll_test.cc
+        test/concurrency/queue_test.cc
         test/file/file_test.cc
         test/file/simple_binary_reader_test.cc
         test/file/simple_binary_writer_test.cc
@@ -54,6 +55,8 @@ add_test(NAME net WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner net)
 add_test(NAME packet_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner packet_header)
+add_test(NAME poll WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner poll)
 add_test(NAME simple_binary_reader WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner simple_binary_reader)
 add_test(NAME simple_binary_writer WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -66,6 +69,8 @@ add_test(NAME udp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner udp_header)
 add_test(NAME sys WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner sys)
+add_test(NAME queue WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner queue)
 
 add_custom_target(doc
         COMMAND doxygen libom.doxyfile
