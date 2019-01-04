@@ -34,6 +34,8 @@ add_executable(test_runner test/test_runner.cc
 target_include_directories(test_runner PUBLIC test/include)
 target_include_directories(test_runner PUBLIC include)
 
+target_link_libraries(test_runner pthread)
+
 add_test(NAME arp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner arp_header)
 add_test(NAME ethernet_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
