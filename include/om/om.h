@@ -2,6 +2,7 @@
 #ifndef LIBOM2_H
 #define LIBOM2_H
 
+#include <atomic>
 #include <arpa/inet.h>
 #include <condition_variable>
 #include <cstdio>
