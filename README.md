@@ -2,45 +2,30 @@
 
 [![Build Status](https://travis-ci.org/olivermichel/libom2.svg?branch=master)](https://travis-ci.org/olivermichel/libom2)
 
-## net
+## CMake Automatic Download and Include
 
-### Headers and Header Fields
-
-* Ethernet (set and get)
-    * destination address (dest_addr - mac_addr)
-    * source address (src_addr - mac_addr)
-    * ether type (ether_type - uint16_t)
+    set(LIBOM_VERSION master) # or commit hash
+    set(LIBOM_HEADER_LOCATION ${CMAKE_HOME_DIRECTORY}/ext/include/om/om.h)
     
-* ARP (get only)
-    * hardware type (hardware_type - uint16_t)
-    * protocol type (protocol_type - uint16_t)
-    * operation (operation - uint16_t)
-    * sender hardware address (sender_hardware_addr - mac_addr)
-    * sender protocol address (sender_protocol_addr - ip4_addr)
-    * target hardware address (target_hardware_addr - mac_addr)
-    * target protocol address (target_protocol_addr - ip4_addr) 
-    
-* IP (set and get)
-    * total length (total_len - uint16_t)
-    * ip identification (id - uint16_t)
-    * time to live (ttl - uint8_t)
-    * protocol id (proto - uint8_t)
-    * source address (src_addr - ip4_addr)
-    * destinatiion address (dest_addr - ip4_addr)
-    
-* ICMP (get only)
-    * type (type - uint8_t)
-    * code (code - uint8_t)
+    if(NOT EXISTS ${LIBOM_HEADER_LOCATION})
+        file(DOWNLOAD
+            https://raw.githubusercontent.com/olivermichel/libom2/${LIBOM_VERSION}/include/om/om.h
+            ${LIBOM_HEADER_LOCATION})
+        message(STATUS "Downloading libom: /ext/include/om/om.h - done")
+    endif()
 
-* TCP (get only)
-    * source port (src_port - uint16_t)
-    * destination port (dest_port - uint16_t)
-    * sequence number (seq_no - uint32_t)
-    * acknowledgement number (ack_no - uint32_t)
-    * flags (flags - uint8_t)
-    * window size (window_size - uint16_t)
+## Run Unit Tests
 
-* UDP (set and get)
-    * source port (src_port - uint16_t)
-    * destination port (dest_port - uint16_t)
-    * payload length (payload_length - uint16_t)
+    mkdir build && cd build
+    cmake ..
+    make
+    make test
+
+## Generate Doxygen Documentation
+
+*requires Doxygen*
+
+    mkdir build && cd build
+    cmake ..
+    make
+    make doc
