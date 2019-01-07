@@ -1027,13 +1027,12 @@ namespace om {
 		class thread_pool
 		{
 		public:
-			thread_pool() : _done(false), _joiner(_threads)
+			explicit thread_pool(unsigned thread_count_ = std::thread::hardware_concurrency())
+				: _done(false), _joiner(_threads)
 			{
-				unsigned const thread_count=std::thread::hardware_concurrency();
-
 				try {
-					for (unsigned i=0; i < thread_count; ++i)
-						_threads.emplace_back(std::thread(&thread_pool::_worker_thread, this));
+					for (unsigned i = 0; i < thread_count_; i++)
+						_threads.emplace_back(&thread_pool::_worker_thread, this);
 				} catch(...) {
 					_done = true;
 					throw;
@@ -1046,9 +1045,9 @@ namespace om {
 			}
 
 			template<typename Fx>
-			void submit(Fx f)
+			void submit(Fx f_)
 			{
-				_task_queue.enqueue(std::function<void()>(f));
+				_task_queue.enqueue(std::function<void()>(f_));
 			}
 
 		private:

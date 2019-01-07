@@ -13,6 +13,6 @@ TEST_CASE("concurrency::thread_joiner", "[concurrency::thread_joiner]")
 	for (auto i = 0; i < thread_count; i++)
 		threads.emplace_back([] { std::this_thread::sleep_for(std::chrono::milliseconds(30)); });
 
-	om::concurrency::thread_joiner join(threads);
+	concurrency::thread_joiner join(threads);
 	// threads will be joined when join goes out of scope
 }

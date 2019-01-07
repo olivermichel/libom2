@@ -6,7 +6,7 @@ using namespace om;
 
 TEST_CASE("concurrency::queue", "[concurrency::queue]")
 {
-	om::concurrency::queue<int> queue;
+	concurrency::queue<int> queue;
 
 	std::thread producer([&queue]() {
 		CHECK(queue.empty());
@@ -18,6 +18,8 @@ TEST_CASE("concurrency::queue", "[concurrency::queue]")
 	std::thread consumer([&queue]() {
 
 		int item = 0;
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 		CHECK(!queue.empty());
 		CHECK(queue.dequeue(item));

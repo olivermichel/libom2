@@ -17,7 +17,8 @@ enable_testing()
 add_executable(test_runner test/test_runner.cc
         test/async/poll_test.cc
         test/concurrency/queue_test.cc
-        test/concurrency/thread_joiner.cc
+        test/concurrency/thread_joiner_test.cc
+        test/concurrency/thread_pool_test.cc
         test/file/file_test.cc
         test/file/simple_binary_reader_test.cc
         test/file/simple_binary_writer_test.cc
@@ -69,6 +70,8 @@ add_test(NAME tcp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner tcp_header)
 add_test(NAME thread_joiner WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner thread_joiner)
+add_test(NAME thread_pool WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner thread_pool)
 add_test(NAME udp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner udp_header)
 add_test(NAME sys WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
