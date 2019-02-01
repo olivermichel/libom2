@@ -117,6 +117,19 @@ namespace om {
 				   | ((a_ & 0x0000ff00)<<8) | (a_<<24);
 		}
 
+		static std::pair<std::string, unsigned short> parse_host_port(const std::string& host_port_)
+		{
+			std::size_t colon_pos = host_port_.find(':');
+
+			if (colon_pos != std::string::npos) {
+				std::string host_part = host_port_.substr(0, colon_pos);
+				std::string port_part = host_port_.substr(colon_pos + 1);
+				return std::make_pair(host_part, (unsigned short) std::stoul(port_part));
+			}
+
+			throw std::invalid_argument("om::net::parse_host_port: invalid argument");
+		}
+
 		//! a media access control address (IEEE 802)
 		class mac_addr
 		{

@@ -57,6 +57,16 @@ TEST_CASE("net", "[net]")
 		0x03, 0x03, 0x09, 0x14, 0x00, 0x00, 0x00, 0x00
 	};
 
+	SECTION("parse_host_port")
+	{
+		auto test1 = net::parse_host_port("127.0.0.1:3222");
+		CHECK(test1.first == "127.0.0.1");
+		CHECK(test1.second == 3222);
+		CHECK_THROWS(net::parse_host_port("127.0.0.1/3222"));
+        CHECK_THROWS(net::parse_host_port("127.0.0.1"));
+        CHECK_THROWS(net::parse_host_port("12732"));
+	}
+
 	SECTION("parse an arp packet")
 	{
 		net::ethernet_header eth(buf1);
