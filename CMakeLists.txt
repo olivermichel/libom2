@@ -19,6 +19,7 @@ add_executable(test_runner test/test_runner.cc
         test/concurrency/queue_test.cc
         test/concurrency/thread_joiner_test.cc
         test/concurrency/thread_pool_test.cc
+        test/etc/etc_test.cc
         test/file/file_test.cc
         test/file/simple_binary_reader_test.cc
         test/file/simple_binary_writer_test.cc
@@ -42,6 +43,8 @@ target_link_libraries(test_runner pthread)
 
 add_test(NAME arp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner arp_header)
+add_test(NAME etc WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner etc)
 add_test(NAME ethernet_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner ethernet_header)
 add_test(NAME file WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}

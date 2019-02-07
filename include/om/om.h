@@ -1134,6 +1134,16 @@ namespace om {
 			auto dur = std::chrono::duration_cast<std::chrono::microseconds>(end - start_);
 			return (double) dur.count() / 1000000;
 		}
+
+		//! formats a unix timestamps (in seconds) using a strftime format (default: %F %T)
+		static std::string format_timestamp(unsigned timestamp_,
+			const std::string& format_ = "%F %T")
+        {
+		    auto time = (std::time_t) timestamp_;
+		    std::stringstream ss;
+		    ss << std::put_time(std::localtime(&time), format_.c_str());
+		    return ss.str();
+        }
 	}
 }
 
