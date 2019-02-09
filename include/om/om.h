@@ -1156,7 +1156,7 @@ namespace om {
         {
 		    auto time = (std::time_t) timestamp_;
 		    std::stringstream ss;
-		    ss << std::put_time(std::localtime(&time), format_.c_str());
+		    ss << std::put_time(std::gmtime(&time), format_.c_str());
 		    return ss.str();
         }
 	}
