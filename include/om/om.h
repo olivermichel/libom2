@@ -1120,6 +1120,21 @@ namespace om {
 			return std::chrono::high_resolution_clock::now();
 		}
 
+		template <typename Rep = std::chrono::seconds>
+		static unsigned long long now_since_epoch()
+        {
+			return std::chrono::duration_cast<Rep>(now().time_since_epoch()).count();
+        }
+
+        template <typename Rep = std::chrono::seconds>
+        static unsigned long long since(
+            std::chrono::time_point<std::chrono::high_resolution_clock> start_)
+        {
+            auto end = std::chrono::high_resolution_clock::now();
+            auto dur = std::chrono::duration_cast<Rep>(end - start_);
+            return (unsigned) dur.count();
+        }
+
 		static unsigned long long microseconds_since(
 			std::chrono::time_point<std::chrono::high_resolution_clock> start_)
 		{
