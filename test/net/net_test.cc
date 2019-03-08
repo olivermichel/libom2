@@ -149,7 +149,12 @@ TEST_CASE("net", "[net]")
 		net::ethernet_header eth(buf);
 		net::ip4_header ip(buf + 14);
 
-		for (unsigned i = 0; i < total_len; i++)
+		for (unsigned i = 0; i < 14; i++)
+			CHECK(buf[i] == 0);
+
+		CHECK(buf[14] == 0x45); // ip version (4) and internet header length (5)
+
+		for (unsigned i = 15; i < total_len; i++)
 			CHECK(buf[i] == 0);
 
 		eth.set_dest_addr(net::mac_addr(0x2));

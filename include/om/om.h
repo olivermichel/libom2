@@ -503,8 +503,24 @@ namespace om {
 			explicit ip4_header(const unsigned char* buf_)
 				: packet_header(buf_), _ip((ip*) _buf)
 			{
+				if (_ip->ip_hl != 5)
+					_ip->ip_hl = 5;
+
+				if (_ip->ip_v != 4)
+					_ip->ip_v = 4;
+
 				_len = _ip->ip_hl * 4;
 			}
+
+			void set_ip_v(unsigned ip_v_= 4)
+            {
+			    _ip->ip_v  = ip_v_;
+            }
+
+            void set_ip_hl(unsigned ip_hl_ = 5)
+            {
+			    _ip->ip_hl = ip_hl_;
+            }
 
 			uint16_t total_len() const
 			{
