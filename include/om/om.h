@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <thread>
+#include <regex>
 #include <unistd.h>
 #include <vector>
 
@@ -1130,6 +1131,14 @@ namespace om {
 			print_bytes(buf_, len_, format_, ss);
 			return ss.str();
 		}
+
+		static std::vector<std::string> tokenize(const std::string& str_,
+		    const std::string& del_ = ",")
+        {
+			std::regex  reg("\\" + del_ +"+");
+			std::sregex_token_iterator iter(str_.begin(), str_.end(), reg, -1), end;
+			return std::vector<std::string>(iter, end);
+        }
 
 		static std::chrono::time_point<std::chrono::high_resolution_clock> now()
 		{
