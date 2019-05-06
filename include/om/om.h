@@ -724,6 +724,29 @@ namespace om {
 			ip4_flow_key(const ip4_flow_key&)            = default;
 			ip4_flow_key& operator=(const ip4_flow_key&) = default;
 
+			bool operator==(const struct ip4_flow_key& other_) const
+			{
+				return _ip_src   == other_._ip_src
+					&& _ip_dst   == other_._ip_dst
+					&& _ip_proto == other_._ip_proto
+					&& _tp_src   == other_._tp_src
+					&& _tp_dst   == other_._tp_dst;
+			}
+
+			bool operator<(const struct ip4_flow_key& other_) const
+			{
+				return _ip_src   < other_._ip_src
+					|| _ip_dst   < other_._ip_dst
+					|| _ip_proto < other_._ip_proto
+					|| _tp_src   < other_._tp_src
+					|| _tp_dst   < other_._tp_dst;
+			}
+
+			bool operator!=(const struct ip4_flow_key& other_) const
+			{
+				return !(*this == other_);
+			}
+
 			static ip4_flow_key from_ip4_bytes(const unsigned char* buf_)
 			{
 				ip4_flow_key flow_key;
@@ -1274,6 +1297,21 @@ namespace std {
 		std::size_t operator()(om::net::ip4_addr const& a) const
 		{
 			return a.to_uint32();
+		}
+	};
+
+	template<> struct hash<om::net::ip4_flow_key>
+	{
+		inline std::size_t operator()(const om::net::ip4_flow_key& d_) const noexcept
+		{
+			// pack into two different long unsigned integers
+			uint64_t a = 0, b = 0;
+			a |= (uint64_t) d_.ip_src().to_uint32() << 32;
+			a |= (uint64_t) d_.ip_dst().to_uint32() <<  0;
+			b |= (uint64_t) d_.tp_src()             << 24;
+			b |= (uint64_t) d_.tp_dst()             <<  8;
+			b |= (uint64_t) d_.ip_proto()           <<  0;
+			return ((size_t) a xor ((size_t) b + 0x9e3779b9 + (a << 6) + (b >> 2)));
 		}
 	};
 }
