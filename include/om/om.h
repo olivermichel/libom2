@@ -1247,6 +1247,16 @@ namespace om {
 		    ss << std::put_time(std::gmtime(&time), format_.c_str());
 		    return ss.str();
         }
+
+		template <typename F>
+		double runtime(F f_)
+		{
+			auto start = std::chrono::high_resolution_clock::now();
+			f_();
+			auto end = std::chrono::high_resolution_clock::now();
+			auto dur = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+			return (double) dur.count() / 1000000;
+		}
 	}
 }
 
