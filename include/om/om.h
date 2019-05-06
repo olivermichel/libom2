@@ -716,6 +716,69 @@ namespace om {
 			udphdr* _udp = nullptr;
 		};
 
+		class ip4_flow_key
+		{
+		public:
+
+			ip4_flow_key()                               = default;
+			ip4_flow_key(const ip4_flow_key&)            = default;
+			ip4_flow_key& operator=(const ip4_flow_key&) = default;
+
+			static ip4_flow_key from_ip4_bytes(const unsigned char* buf_)
+			{
+				ip4_flow_key flow_key;
+				ip4_header ip(buf_);
+
+				flow_key._ip_src   = ip.src_addr();
+				flow_key._ip_dst   = ip.src_addr();
+				flow_key._ip_proto = ip.proto();
+
+				if (ip.proto() == 6) {
+					om::net::tcp_header tcp(buf_ + 20);
+					flow_key._tp_src = tcp.src_port();
+					flow_key._tp_dst = tcp.dest_port();
+				} else if (ip.proto() == 17) {
+					om::net::udp_header udp(buf_ + 20);
+					flow_key._tp_src = udp.src_port();
+					flow_key._tp_dst = udp.dest_port();
+				}
+
+				return flow_key;
+			}
+
+			ip4_addr ip_src() const
+			{
+				return _ip_src;
+			}
+
+			ip4_addr ip_dst() const
+			{
+				return _ip_dst;
+			}
+
+			uint16_t tp_src() const
+			{
+				return _tp_src;
+			}
+
+			uint16_t tp_dst() const
+			{
+				return _tp_dst;
+			}
+
+			uint8_t ip_proto() const
+			{
+				return _ip_proto;
+			}
+
+		private:
+			ip4_addr _ip_src;
+			ip4_addr _ip_dst;
+			uint16_t _tp_src   = 0;
+			uint16_t _tp_dst   = 0;
+			uint8_t  _ip_proto = 0;
+		};
+
 		//! an unix internet socket
 		class socket : public sys::file_descriptor
 		{

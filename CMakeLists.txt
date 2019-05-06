@@ -27,6 +27,7 @@ add_executable(test_runner test/test_runner.cc
         test/net/ethernet_header_test.cc
         test/net/icmp_header_test.cc
         test/net/ip4_addr_test.cc
+        test/net/ip4_flow_key_test.cc
         test/net/ip4_header_test.cc
         test/net/mac_addr_test.cc
         test/net/net_test.cc
@@ -53,6 +54,8 @@ add_test(NAME icmp_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner icmp_header)
 add_test(NAME ip4_addr WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner ip4_addr)
+add_test(NAME ip4_flow_key WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND test_runner ip4_flow_key)
 add_test(NAME ip4_header WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMAND test_runner ip4_header)
 add_test(NAME mac_addr WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
