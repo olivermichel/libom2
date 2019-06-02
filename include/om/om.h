@@ -1288,6 +1288,18 @@ namespace om {
 			auto dur = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 			return (double) dur.count() / 1000000;
 		}
+
+		void file_by_line(const std::string& file_name_,
+			const std::function<void (const std::string&)>&& handler_)
+		{
+			std::ifstream file(file_name_);
+			std::string line;
+
+			while (std::getline(file, line))
+				handler_(line);
+
+			file.close();
+		}
 	}
 }
 
