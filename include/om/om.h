@@ -724,6 +724,14 @@ namespace om {
 			ip4_flow_key(const ip4_flow_key&)            = default;
 			ip4_flow_key& operator=(const ip4_flow_key&) = default;
 
+			explicit ip4_flow_key(const ip4_addr& ip_src_, const ip4_addr& ip_dst_,
+				uint16_t tp_src_, uint16_t tp_dst_, uint8_t ip_proto_)
+				: _ip_src(ip_src_),
+				  _ip_dst(ip_dst_),
+				  _tp_src(tp_src_),
+				  _tp_dst(tp_dst_),
+				  _ip_proto(ip_proto_) { }
+
 			bool operator==(const struct ip4_flow_key& other_) const
 			{
 				return _ip_src   == other_._ip_src
