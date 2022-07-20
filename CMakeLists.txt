@@ -4,7 +4,7 @@ project(libom2)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(CATCH_VERSION 2.2.2)
+set(CATCH_VERSION 2.13.8)
 
 if (NOT EXISTS ${CMAKE_HOME_DIRECTORY}/test/include/catch.h)
     file(DOWNLOAD
