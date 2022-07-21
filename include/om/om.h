@@ -866,6 +866,30 @@ namespace om {
 				return (unsigned) len;
 			}
 
+            unsigned receive_from(unsigned char* buffer_, unsigned len_, om::net::ip4_addr& ip,
+                                  std::uint16_t& port, int flags_ = 0)
+            {
+                struct sockaddr_storage from {};
+                socklen_t from_len = sizeof(from);
+
+                std::size_t rx_len = ::recvfrom(_fd, buffer_, len_, flags_,
+                                                (struct sockaddr*) &from, &from_len);
+
+                if (from.ss_family == AF_INET) {
+                    auto* from_in = (struct sockaddr_in*) &from;
+                    ip = om::net::ip4_addr::from_net(from_in->sin_addr.s_addr);
+                    port = ntohs(from_in->sin_port);
+                } else {
+                    return 0;
+                }
+
+                if (rx_len == -1)
+                    throw std::runtime_error("socket: could not receive: errno: "
+                                             + std::to_string(errno));
+
+                return (unsigned) rx_len;
+            }
+
 			bool is_open()
 			{
 				return _fd != -1;
